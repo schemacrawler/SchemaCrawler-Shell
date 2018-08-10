@@ -25,28 +25,37 @@ http://www.gnu.org/licenses/
 
 ========================================================================
 */
+
 package schemacrawler.shell;
 
 
-import static us.fatehi.commandlineparser.CommandLineUtility.applyApplicationLogLevel;
+import java.io.PrintStream;
 
-import java.util.logging.Level;
+import org.springframework.boot.Banner;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import sf.util.IOUtility;
 
-@SpringBootApplication
-@EnableAutoConfiguration(exclude = { ThymeleafAutoConfiguration.class })
-public class SchemaCrawlerShellApplication
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class SchemaCrawlerBanner
+  implements Banner
 {
 
-  public static void main(final String[] args)
+  private static final String BANNER = IOUtility
+    .readResourceFully("/banner.txt");
+
+  @Override
+  public void printBanner(final Environment environment,
+                          final Class<?> sourceClass,
+                          final PrintStream printStream)
   {
-    // Turn application logging on by applying the correct log level
-    applyApplicationLogLevel(Level.OFF);
-    SpringApplication.run(SchemaCrawlerShellApplication.class, args);
+    printStream.println(AnsiOutput.toString(AnsiColor.GREEN, BANNER));
   }
 
 }

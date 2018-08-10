@@ -25,28 +25,30 @@ http://www.gnu.org/licenses/
 
 ========================================================================
 */
+
 package schemacrawler.shell;
 
 
-import static us.fatehi.commandlineparser.CommandLineUtility.applyApplicationLogLevel;
+import org.jline.utils.AttributedString;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.shell.jline.PromptProvider;
+import org.springframework.stereotype.Component;
 
-import java.util.logging.Level;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-
-@SpringBootApplication
-@EnableAutoConfiguration(exclude = { ThymeleafAutoConfiguration.class })
-public class SchemaCrawlerShellApplication
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class ShellPrompt
+  implements PromptProvider
 {
-
-  public static void main(final String[] args)
+  /**
+   * Getter for the Prompt.
+   *
+   * @return String
+   */
+  @Override
+  public final AttributedString getPrompt()
   {
-    // Turn application logging on by applying the correct log level
-    applyApplicationLogLevel(Level.OFF);
-    SpringApplication.run(SchemaCrawlerShellApplication.class, args);
+    return new AttributedString("schemacrawler> ");
   }
 
 }
