@@ -56,7 +56,7 @@ public class ConnectCommand
   @Autowired
   private SchemaCrawlerShellState state;
 
-  @ShellMethod(value = "Connect to a database, using a server spefication", prefix = "-")
+  @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
   public boolean connect(@ShellOption(value = "-url") @NotNull final String connectionUrl,
                          @NotNull final String user,
                          @ShellOption(defaultValue = "") final String password)
