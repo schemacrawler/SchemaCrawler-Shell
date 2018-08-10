@@ -58,7 +58,7 @@ public class ConnectCommand
 
   @ShellMethod(value = "Connect to a database, using a server spefication", prefix = "-")
   public boolean connect(@ShellOption(value = "-url") @NotNull final String connectionUrl,
-                         final String user,
+                         @NotNull final String user,
                          @ShellOption(defaultValue = "") final String password)
   {
     final BasicDataSource dataSource = new BasicDataSource();
