@@ -32,4 +32,9 @@ public class SchemaCrawlerShellState
     state.put(key, value);
   }
 
+  public <T> T remove(final Object key)
+  {
+    return (T) state.remove(key);
+  }
+
 }
