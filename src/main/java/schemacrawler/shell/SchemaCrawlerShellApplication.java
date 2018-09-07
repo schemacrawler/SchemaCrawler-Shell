@@ -45,7 +45,7 @@ public class SchemaCrawlerShellApplication
   public static void main(final String[] args)
   {
     // Turn application logging on by applying the correct log level
-    applyApplicationLogLevel(Level.OFF);
+    applyApplicationLogLevel(Level.INFO);
     SpringApplication.run(SchemaCrawlerShellApplication.class, args);
   }
 

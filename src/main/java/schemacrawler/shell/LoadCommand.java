@@ -31,8 +31,6 @@ package schemacrawler.shell;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.util.logging.Level;
 
@@ -50,9 +48,7 @@ import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.tools.catalogloader.CatalogLoader;
 import schemacrawler.tools.catalogloader.CatalogLoaderRegistry;
-import schemacrawler.tools.iosource.FileInputResource;
 import schemacrawler.tools.options.InfoLevel;
-import schemacrawler.utility.PropertiesUtility;
 import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 
@@ -67,43 +63,23 @@ public class LoadCommand
   @Autowired
   private SchemaCrawlerShellState state;
 
-  @ShellMethod(value = "Load a config properties file", prefix = "-")
-  public boolean config(@NotNull final Path configFilePath)
-  {
-    try
-    {
-      final Config config = new Config();
-      config.putAll(PropertiesUtility
-        .loadConfig(new FileInputResource(configFilePath)));
-      state.put("config", config);
-      return true;
-    }
-    catch (final IOException e)
-    {
-      return false;
-    }
-  }
-
-  @ShellMethod(key = "isloaded", value = "Check if the schema is loaded")
+  @ShellMethod(value = "Check if the catalog is loaded")
   public boolean isLoaded()
   {
-    final Catalog catalog = state.get("catalog");
+    final Catalog catalog = state.getCatalog();
     return catalog != null;
   }
 
   @ShellMethod(value = "Load a catalog", prefix = "-")
   public boolean loadCatalog(@ShellOption(value = "-infolevel") @NotNull final InfoLevel infoLevel)
   {
-    try
+    try (final Connection connection = state.getDataSource().getConnection();)
     {
-      final Connection connection = state.get("connection");
-
-      final Config additionalConfiguration = state
-        .get("additionalConfiguration");
+      final Config additionalConfiguration = state.getAdditionalConfiguration();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
-        .get("schemaRetrievalOptions");
+        .getSchemaRetrievalOptionsBuilder().toOptions();
       final SchemaCrawlerOptions schemaCrawlerOptions = state
-        .get("schemaCrawlerOptions");
+        .getSchemaCrawlerOptionsBuilder().toOptions();
 
       final CatalogLoaderRegistry catalogLoaderRegistry = new CatalogLoaderRegistry();
       final CatalogLoader catalogLoader = catalogLoaderRegistry
@@ -121,12 +97,13 @@ public class LoadCommand
       final Catalog catalog = catalogLoader.loadCatalog();
       requireNonNull(catalog, "Catalog could not be retrieved");
 
-      state.put("catalog", catalog);
+      state.setCatalog(catalog);
       LOGGER.log(Level.INFO, "Loaded catalog");
     }
     catch (final Exception e)
     {
-      state.remove("catalog");
+      LOGGER.log(Level.WARNING, e.getMessage(), e);
+      state.setCatalog(null);
     }
 
     return isLoaded();

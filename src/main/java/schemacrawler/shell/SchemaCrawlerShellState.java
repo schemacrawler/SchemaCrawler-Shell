@@ -1,40 +1,73 @@
 package schemacrawler.shell;
 
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.sql.DataSource;
 
 import org.springframework.stereotype.Component;
+
+import schemacrawler.schema.Catalog;
+import schemacrawler.schemacrawler.Config;
+import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
+import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
 
 @Component("state")
 public class SchemaCrawlerShellState
 {
 
-  private final Map<String, Object> state;
+  private Catalog catalog;
+  private DataSource dataSource;
+  private Config additionalConfiguration;
+  private SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder;
+  private SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder;
 
-  public SchemaCrawlerShellState()
+  public Config getAdditionalConfiguration()
   {
-    state = new HashMap<>();
+    return additionalConfiguration;
   }
 
-  public boolean containsKey(final String key)
+  public Catalog getCatalog()
   {
-    return state.containsKey(key);
+    return catalog;
   }
 
-  public <T> T get(final String key)
+  public DataSource getDataSource()
   {
-    return (T) state.get(key);
+    return dataSource;
   }
 
-  public void put(final String key, final Object value)
+  public SchemaCrawlerOptionsBuilder getSchemaCrawlerOptionsBuilder()
   {
-    state.put(key, value);
+    return schemaCrawlerOptionsBuilder;
   }
 
-  public <T> T remove(final Object key)
+  public SchemaRetrievalOptionsBuilder getSchemaRetrievalOptionsBuilder()
   {
-    return (T) state.remove(key);
+    return schemaRetrievalOptionsBuilder;
+  }
+
+  public void setAdditionalConfiguration(final Config additionalConfiguration)
+  {
+    this.additionalConfiguration = additionalConfiguration;
+  }
+
+  public void setCatalog(final Catalog catalog)
+  {
+    this.catalog = catalog;
+  }
+
+  public void setDataSource(final DataSource dataSource)
+  {
+    this.dataSource = dataSource;
+  }
+
+  public void setSchemaCrawlerOptionsBuilder(final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder)
+  {
+    this.schemaCrawlerOptionsBuilder = schemaCrawlerOptionsBuilder;
+  }
+
+  public void setSchemaRetrievalOptionsBuilder(final SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder)
+  {
+    this.schemaRetrievalOptionsBuilder = schemaRetrievalOptionsBuilder;
   }
 
 }
