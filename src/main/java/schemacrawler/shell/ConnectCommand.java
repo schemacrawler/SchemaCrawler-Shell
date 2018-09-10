@@ -66,50 +66,53 @@ public class ConnectCommand
   private Config config;
   private DatabaseConnector databaseConnector;
 
-  @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
-  public boolean connectUrl(@ShellOption(value = "-url") @NotNull final String connectionUrl,
-                            @NotNull final String user,
-                            @ShellOption(defaultValue = "") final String password)
-    throws SchemaCrawlerException, SQLException
-  {
-
-    LOGGER.log(Level.INFO, "Database connection URL: " + connectionUrl);
-
-    LOGGER.log(Level.INFO, "Looking up database connector");
-    lookupDatabaseConnectorFromUrl(connectionUrl);
-    LOGGER.log(Level.INFO, "Loading config");
-    loadConfig();
-    LOGGER.log(Level.INFO, "Loading SchemaCrawler options");
-    loadSchemaCrawlerOptionsBuilder();
-    LOGGER.log(Level.INFO, "Creating data source");
-    createDataSource(connectionUrl, user, password);
-    LOGGER.log(Level.INFO, "Loading schema retrieval options");
-    loadSchemaRetrievalOptionsBuilder();
-
-    LOGGER.log(Level.INFO, "Checking connection");
-    return isConnected();
-  }
-
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
   public boolean connect(@ShellOption(value = "-server") @NotNull final String databaseSystemIdentifier,
                          @ShellOption(defaultValue = "") final String host,
-                         @ShellOption(defaultValue = "") final String port,
+                         @ShellOption(defaultValue = "0") final int port,
                          @ShellOption(defaultValue = "") final String database,
                          @ShellOption(defaultValue = "") final String urlx,
                          @NotNull final String user,
                          @ShellOption(defaultValue = "") final String password)
     throws SchemaCrawlerException, SQLException
   {
+    lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
+    loadConfig();
+    loadSchemaCrawlerOptionsBuilder();
+
     final SingleUseUserCredentials userCredentials = new SingleUseUserCredentials(user,
                                                                                   password);
     final DatabaseConfigConnectionOptions connectionOptions = new DatabaseConfigConnectionOptions(userCredentials,
                                                                                                   config);
+    connectionOptions.setDatabase(database);
+    connectionOptions.setHost(host);
+    connectionOptions.setPort(port);
+    connectionOptions.setUrlX(urlx);
+
     final String connectionUrl = connectionOptions.getConnectionUrl();
 
-    return connectUrl(connectionUrl, user, password);
+    createDataSource(connectionUrl, user, password);
+    loadSchemaRetrievalOptionsBuilder();
+
+    return isConnected();
   }
 
-  @ShellMethod(value = "Check if there is a connection to the database")
+  @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
+  public boolean connectUrl(@ShellOption(value = "-url", help = "Database connection URL") @NotNull final String connectionUrl,
+                            @NotNull @ShellOption(help = "Database username") final String user,
+                            @ShellOption(defaultValue = "", help = "Database password") final String password)
+    throws SchemaCrawlerException, SQLException
+  {
+    lookupDatabaseConnectorFromUrl(connectionUrl);
+    loadConfig();
+    loadSchemaCrawlerOptionsBuilder();
+    createDataSource(connectionUrl, user, password);
+    loadSchemaRetrievalOptionsBuilder();
+
+    return isConnected();
+  }
+
+  @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
   public boolean isConnected()
   {
     try (final Connection connection = state.getDataSource().getConnection();)
@@ -119,11 +122,12 @@ public class ConnectCommand
              "Connected to: "
                          + connection.getMetaData().getDatabaseProductName());
     }
-    catch (final SQLException e)
+    catch (final NullPointerException | SQLException e)
     {
       LOGGER.log(Level.WARNING, e.getMessage(), e);
       return false;
     }
+
     return true;
   }
 
@@ -170,6 +174,14 @@ public class ConnectCommand
       schemaRetrievalOptionsBuilder.fromConfig(config);
       state.setSchemaRetrievalOptionsBuilder(schemaRetrievalOptionsBuilder);
     }
+  }
+
+  private void lookupDatabaseConnectorFromServer(final String databaseSystemIdentifier)
+    throws SchemaCrawlerException
+  {
+    final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
+    databaseConnector = registry
+      .lookupDatabaseConnector(databaseSystemIdentifier);
   }
 
   private void lookupDatabaseConnectorFromUrl(final String connectionUrl)
