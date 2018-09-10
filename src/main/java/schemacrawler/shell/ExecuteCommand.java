@@ -34,9 +34,11 @@ import java.sql.Connection;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
@@ -79,6 +81,14 @@ public class ExecuteCommand
       executable.setSchemaRetrievalOptions(schemaRetrievalOptions);
       executable.execute();
     }
+  }
+
+  @ShellMethodAvailability
+  public Availability isLoaded()
+  {
+    final boolean isConnected = new LoadCommand(state).isLoaded();
+    return isConnected? Availability.available(): Availability
+      .unavailable("there is no schema metadata loaded");
   }
 
 }

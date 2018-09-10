@@ -39,6 +39,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import schemacrawler.Version;
 import sf.util.IOUtility;
 
 @Component
@@ -56,6 +57,7 @@ public class SchemaCrawlerBanner
                           final PrintStream printStream)
   {
     printStream.println(AnsiOutput.toString(AnsiColor.GREEN, BANNER));
+    printStream.println(Version.about());
   }
 
 }

@@ -62,9 +62,14 @@ public class ConnectCommand
     .getLogger(ConnectCommand.class.getName());
 
   @Autowired
-  private SchemaCrawlerShellState state;
+  private final SchemaCrawlerShellState state;
   private Config config;
   private DatabaseConnector databaseConnector;
+
+  public ConnectCommand(final SchemaCrawlerShellState state)
+  {
+    this.state = state;
+  }
 
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
   public boolean connect(@ShellOption(value = "-server") @NotNull final String databaseSystemIdentifier,

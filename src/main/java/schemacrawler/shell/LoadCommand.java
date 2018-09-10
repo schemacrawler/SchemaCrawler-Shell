@@ -37,9 +37,11 @@ import java.util.logging.Level;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schema.Catalog;
@@ -61,7 +63,20 @@ public class LoadCommand
     .getLogger(LoadCommand.class.getName());
 
   @Autowired
-  private SchemaCrawlerShellState state;
+  private final SchemaCrawlerShellState state;
+
+  public LoadCommand(final SchemaCrawlerShellState state)
+  {
+    this.state = state;
+  }
+
+  @ShellMethodAvailability
+  public Availability isConnected()
+  {
+    final boolean isConnected = new ConnectCommand(state).isConnected();
+    return isConnected? Availability.available(): Availability
+      .unavailable("there is no database connection");
+  }
 
   @ShellMethod(value = "Check if the catalog is loaded")
   public boolean isLoaded()
