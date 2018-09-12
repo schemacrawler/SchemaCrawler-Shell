@@ -71,25 +71,14 @@ public class ConnectCommand
     this.state = state;
   }
 
-  @ShellMethod(value = "List available SchemaCrawler database plugins", prefix = "-")
-  public void servers()
-    throws Exception
-  {
-    DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
-    for (final String server: registry)
-    {
-      System.out.println(server);
-    }
-  }
-
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
-  public boolean connect(@ShellOption(value = "-server") @NotNull final String databaseSystemIdentifier,
-                         @ShellOption(defaultValue = "") final String host,
-                         @ShellOption(defaultValue = "0") final int port,
-                         @ShellOption(defaultValue = "") final String database,
-                         @ShellOption(defaultValue = "") final String urlx,
-                         @NotNull final String user,
-                         @ShellOption(defaultValue = "") final String password)
+  public boolean connect(@ShellOption(value = "-server", help = "Database system for which a SchemaCrawler plug-in is available") @NotNull final String databaseSystemIdentifier,
+                         @ShellOption(defaultValue = "", help = "Host name") final String host,
+                         @ShellOption(defaultValue = "0", help = "Port") final int port,
+                         @ShellOption(defaultValue = "", help = "Database name") final String database,
+                         @ShellOption(defaultValue = "", help = "Additional properties for the JDBC driver") final String urlx,
+                         @NotNull @ShellOption(help = "Database user name") final String user,
+                         @ShellOption(defaultValue = "", help = "Database password") final String password)
     throws SchemaCrawlerException, SQLException
   {
     lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
@@ -114,8 +103,8 @@ public class ConnectCommand
   }
 
   @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
-  public boolean connectUrl(@ShellOption(value = "-url", help = "Database connection URL") @NotNull final String connectionUrl,
-                            @NotNull @ShellOption(help = "Database username") final String user,
+  public boolean connectUrl(@NotNull @ShellOption(value = "-url", help = "JDBC connection URL to the database") final String connectionUrl,
+                            @NotNull @ShellOption(help = "Database user name") final String user,
                             @ShellOption(defaultValue = "", help = "Database password") final String password)
     throws SchemaCrawlerException, SQLException
   {
@@ -145,6 +134,17 @@ public class ConnectCommand
     }
 
     return true;
+  }
+
+  @ShellMethod(value = "List available SchemaCrawler database plugins", prefix = "-")
+  public void servers()
+    throws Exception
+  {
+    final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
+    for (final String server: registry)
+    {
+      System.out.println(server);
+    }
   }
 
   private void createDataSource(final String connectionUrl,

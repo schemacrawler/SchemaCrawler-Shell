@@ -26,7 +26,6 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-
 package schemacrawler.shell;
 
 
@@ -73,7 +72,10 @@ public class ExecuteCommand
   }
 
   @ShellMethod(value = "Execute a SchemaCrawler command", prefix = "-")
-  public void execute(@ShellOption @NotNull final String command)
+  public void execute(@ShellOption @NotNull final String command,
+                      boolean sorttables,
+                      boolean sortcolumns,
+                      boolean sortinout)
     throws Exception
   {
     try (Connection connection = state.getDataSource().getConnection();)
