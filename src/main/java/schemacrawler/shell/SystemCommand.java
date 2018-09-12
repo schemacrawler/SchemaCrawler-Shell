@@ -46,7 +46,7 @@ public class SystemCommand
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
     .getLogger(SystemCommand.class.getName());
 
-  @ShellMethod(value = "System version information")
+  @ShellMethod(value = "4. System version information")
   public void systemInfo()
     throws Exception
   {
