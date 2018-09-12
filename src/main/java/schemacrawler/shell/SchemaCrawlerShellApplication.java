@@ -28,10 +28,6 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell;
 
 
-import static us.fatehi.commandlineparser.CommandLineUtility.applyApplicationLogLevel;
-
-import java.util.logging.Level;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -44,8 +40,6 @@ public class SchemaCrawlerShellApplication
 
   public static void main(final String[] args)
   {
-    // Turn application logging on by applying the correct log level
-    applyApplicationLogLevel(Level.INFO);
     SpringApplication.run(SchemaCrawlerShellApplication.class, args);
   }
 
