@@ -71,6 +71,17 @@ public class ConnectCommand
     this.state = state;
   }
 
+  @ShellMethod(value = "List available SchemaCrawler database plugins", prefix = "-")
+  public void servers()
+    throws Exception
+  {
+    DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
+    for (final String server: registry)
+    {
+      System.out.println(server);
+    }
+  }
+
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
   public boolean connect(@ShellOption(value = "-server") @NotNull final String databaseSystemIdentifier,
                          @ShellOption(defaultValue = "") final String host,

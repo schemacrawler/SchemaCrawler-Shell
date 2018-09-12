@@ -23,8 +23,6 @@ package schemacrawler.shell;
 
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -60,9 +58,7 @@ public class ExecuteCommand
     throws Exception
   {
     final CommandRegistry registry = new CommandRegistry();
-    final List<String> supportedCommands = new ArrayList<>(registry
-      .getSupportedCommands());
-    for (final String command: supportedCommands)
+    for (final String command: registry)
     {
       System.out.println(command);
     }
