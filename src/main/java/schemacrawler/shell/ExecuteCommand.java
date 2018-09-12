@@ -72,10 +72,10 @@ public class ExecuteCommand
   }
 
   @ShellMethod(value = "Execute a SchemaCrawler command", prefix = "-")
-  public void execute(@ShellOption @NotNull final String command,
-                      boolean sorttables,
-                      boolean sortcolumns,
-                      boolean sortinout)
+  public void execute(@NotNull @ShellOption(help = "SchemaCrawler command") final String command,
+                      @ShellOption(help = "Whether to sort tables") boolean sorttables,
+                      @ShellOption(help = "Whether to sort table columns") boolean sortcolumns,
+                      @ShellOption(help = "Whether to routine parameters") boolean sortinout)
     throws Exception
   {
     try (Connection connection = state.getDataSource().getConnection();)

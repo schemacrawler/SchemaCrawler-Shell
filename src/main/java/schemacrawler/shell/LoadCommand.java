@@ -86,7 +86,7 @@ public class LoadCommand
   }
 
   @ShellMethod(value = "Load a catalog", prefix = "-")
-  public boolean loadCatalog(@ShellOption(value = "-infolevel") @NotNull final InfoLevel infoLevel)
+  public boolean loadCatalog(@ShellOption(value = "-infolevel", help = "Determines the amount of database metadata retrieved") @NotNull final InfoLevel infoLevel)
   {
     try (final Connection connection = state.getDataSource().getConnection();)
     {
