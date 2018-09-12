@@ -55,7 +55,7 @@ import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 
 @ShellComponent
-@ShellCommandGroup("Catalog Load Commands")
+@ShellCommandGroup("2. Catalog Load Commands")
 public class LoadCommand
 {
 

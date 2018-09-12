@@ -49,7 +49,7 @@ import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("SchemaCrawler Commands")
+@ShellCommandGroup("3. SchemaCrawler Commands")
 public class ExecuteCommand
 {
 

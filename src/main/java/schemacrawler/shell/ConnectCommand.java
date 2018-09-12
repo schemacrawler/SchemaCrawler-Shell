@@ -54,7 +54,7 @@ import sf.util.SchemaCrawlerLogger;
 import us.fatehi.commandlineparser.CommandLineUtility;
 
 @ShellComponent
-@ShellCommandGroup("Database Connection Commands")
+@ShellCommandGroup("1. Database Connection Commands")
 public class ConnectCommand
 {
 
