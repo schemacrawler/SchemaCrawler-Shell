@@ -31,23 +31,29 @@ package schemacrawler.shell.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.shell.ConnectCommands;
+import schemacrawler.shell.SchemaCrawlerShellState;
 import schemacrawler.shell.SystemCommands;
 
-public class SystemCommandsTest
+@RunWith(SpringJUnit4ClassRunner.class)
+public class ConnectCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
@@ -57,44 +63,34 @@ public class SystemCommandsTest
   @Before
   public void setUp()
   {
-    final ApplicationContext context = new AnnotationConfigApplicationContext(SystemCommands.class);
+    final ApplicationContext context = new AnnotationConfigApplicationContext(ConnectCommands.class);
     registrar.setApplicationContext(context);
     registrar.register(registry);
   }
 
-  @Test
-  public void systemInfo()
+  @Bean
+  public SchemaCrawlerShellState state()
   {
-    final String command = "system-info";
-    final String commandMethod = "systemInfo";
-
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(), is("System version information"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(SystemCommands.class, commandMethod)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget), nullValue());
+    return new SchemaCrawlerShellState();
   }
 
+  @Ignore("Under development")
   @Test
-  public void version()
+  public void connect()
   {
-    final String command = "version";
-    final String commandMethod = "version";
+    final String command = "connect";
+    final String commandMethod = "connect";
 
     final Map<String, MethodTarget> commands = registry.listCommands();
     final MethodTarget commandTarget = commands.get(command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
     assertThat(commandTarget.getHelp(),
-               is("SchemaCrawler version information"));
+               is("Connect to a database, using a server specification"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(SystemCommands.class, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget), nullValue());
+    assertThat(invoke(commandTarget), is(true));
   }
 
 }

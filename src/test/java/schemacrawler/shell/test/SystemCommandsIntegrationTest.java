@@ -53,6 +53,7 @@ import schemacrawler.shell.SystemCommands;
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
 public class SystemCommandsIntegrationTest
+  extends BaseSchemaCrawlerShellTest
 {
 
   @Autowired
