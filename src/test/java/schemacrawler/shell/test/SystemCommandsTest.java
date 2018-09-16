@@ -49,7 +49,7 @@ import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
 import schemacrawler.shell.SystemCommands;
 
-public class SystemCommandsShellTest
+public class SystemCommandsTest
 {
 
   private final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();

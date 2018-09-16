@@ -52,7 +52,7 @@ import schemacrawler.shell.SystemCommands;
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
-public class SystemCommandsShellIntegrationTest
+public class SystemCommandsIntegrationTest
 {
 
   @Autowired

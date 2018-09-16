@@ -165,7 +165,7 @@ public class ConnectCommands
   private void loadConfig()
     throws SchemaCrawlerException
   {
-    // TODO: Find a way to get command-line arguments
+    // TODO: Find a way to get command-line arguments from AppRunner
     final Config argsMap = new Config();
     config = CommandLineUtility.loadConfig(argsMap, databaseConnector);
 
