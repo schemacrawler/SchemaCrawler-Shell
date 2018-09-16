@@ -51,13 +51,15 @@ public class SystemCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
+  private static final Class<SystemCommands> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
+
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
 
   @Before
-  public void setUp()
+  public void setup()
   {
-    final ApplicationContext context = new AnnotationConfigApplicationContext(SystemCommands.class);
+    final ApplicationContext context = new AnnotationConfigApplicationContext(COMMANDS_CLASS_UNDER_TEST);
+    final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);
   }
@@ -74,7 +76,7 @@ public class SystemCommandsTest
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
     assertThat(commandTarget.getHelp(), is("System version information"));
     assertThat(commandTarget.getMethod(),
-               is(findMethod(SystemCommands.class, commandMethod)));
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
     assertThat(invoke(commandTarget), nullValue());
   }
@@ -92,7 +94,7 @@ public class SystemCommandsTest
     assertThat(commandTarget.getHelp(),
                is("SchemaCrawler version information"));
     assertThat(commandTarget.getMethod(),
-               is(findMethod(SystemCommands.class, commandMethod)));
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
     assertThat(invoke(commandTarget), nullValue());
   }
