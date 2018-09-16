@@ -51,11 +51,11 @@ import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
 @ShellCommandGroup("3. SchemaCrawler Commands")
-public class ExecuteCommand
+public class ExecuteCommands
 {
 
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
-    .getLogger(ExecuteCommand.class.getName());
+    .getLogger(ExecuteCommands.class.getName());
 
   @Autowired
   private SchemaCrawlerShellState state;
@@ -101,7 +101,7 @@ public class ExecuteCommand
   @ShellMethodAvailability
   public Availability isLoaded()
   {
-    final boolean isConnected = new LoadCommand(state).isLoaded();
+    final boolean isConnected = new LoadCommands(state).isLoaded();
     return isConnected? Availability.available(): Availability
       .unavailable("there is no schema metadata loaded");
   }

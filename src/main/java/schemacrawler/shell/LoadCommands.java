@@ -56,16 +56,16 @@ import sf.util.StringFormat;
 
 @ShellComponent
 @ShellCommandGroup("2. Catalog Load Commands")
-public class LoadCommand
+public class LoadCommands
 {
 
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
-    .getLogger(LoadCommand.class.getName());
+    .getLogger(LoadCommands.class.getName());
 
   @Autowired
   private final SchemaCrawlerShellState state;
 
-  public LoadCommand(final SchemaCrawlerShellState state)
+  public LoadCommands(final SchemaCrawlerShellState state)
   {
     this.state = state;
   }
@@ -73,7 +73,7 @@ public class LoadCommand
   @ShellMethodAvailability
   public Availability isConnected()
   {
-    final boolean isConnected = new ConnectCommand(state).isConnected();
+    final boolean isConnected = new ConnectCommands(state).isConnected();
     return isConnected? Availability.available(): Availability
       .unavailable("there is no database connection");
   }

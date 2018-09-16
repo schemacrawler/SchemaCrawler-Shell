@@ -40,11 +40,11 @@ import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
 @ShellCommandGroup("4. System Commands")
-public class SystemCommand
+public class SystemCommands
 {
 
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
-    .getLogger(SystemCommand.class.getName());
+    .getLogger(SystemCommands.class.getName());
 
   @ShellMethod(value = "System version information")
   public void systemInfo()

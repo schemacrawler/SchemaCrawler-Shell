@@ -55,18 +55,18 @@ import us.fatehi.commandlineparser.CommandLineUtility;
 
 @ShellComponent
 @ShellCommandGroup("1. Database Connection Commands")
-public class ConnectCommand
+public class ConnectCommands
 {
 
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
-    .getLogger(ConnectCommand.class.getName());
+    .getLogger(ConnectCommands.class.getName());
 
   @Autowired
   private final SchemaCrawlerShellState state;
   private Config config;
   private DatabaseConnector databaseConnector;
 
-  public ConnectCommand(final SchemaCrawlerShellState state)
+  public ConnectCommands(final SchemaCrawlerShellState state)
   {
     this.state = state;
   }

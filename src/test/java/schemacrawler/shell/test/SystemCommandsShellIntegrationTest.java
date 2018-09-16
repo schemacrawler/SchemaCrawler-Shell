@@ -34,56 +34,44 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
-import static org.springframework.util.ReflectionUtils.invokeMethod;
 
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.lang.Nullable;
-import org.springframework.shell.ConfigurableCommandRegistry;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.MethodTarget;
-import org.springframework.shell.standard.StandardMethodTargetRegistrar;
+import org.springframework.shell.Shell;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.shell.SystemCommands;
 
-public class SystemCommandsShellTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(properties = {
+                               InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
+                               + "=" + false })
+public class SystemCommandsShellIntegrationTest
 {
 
-  private final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
-  private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-
-  @Before
-  public void setUp()
-  {
-    final ApplicationContext context = new AnnotationConfigApplicationContext(SystemCommands.class);
-    registrar.setApplicationContext(context);
-    registrar.register(registry);
-  }
+  @Autowired
+  private Shell shell;
 
   @Test
-  public void testSystemInfo()
+  public void systemInfo()
   {
     final String command = "system-info";
     final String commandMethod = "systemInfo";
-
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(), is("System version information"));
-    assertThat(commandTarget.getMethod(),
+    final Map<String, MethodTarget> commands = shell.listCommands();
+    final MethodTarget methodTarget = commands.get(command);
+    assertThat(methodTarget, notNullValue());
+    assertThat(methodTarget.getGroup(), is("4. System Commands"));
+    assertThat(methodTarget.getHelp(), is("System version information"));
+    assertThat(methodTarget.getMethod(),
                is(findMethod(SystemCommands.class, commandMethod)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget), nullValue());
-  }
-
-  private Object invoke(final MethodTarget methodTarget,
-                        @Nullable Object... args)
-  {
-    return invokeMethod(methodTarget.getMethod(), methodTarget.getBean(), args);
+    assertThat(methodTarget.getAvailability().isAvailable(), is(true));
+    assertThat(shell.evaluate(() -> command), nullValue());
   }
 
 }
