@@ -31,7 +31,6 @@ package schemacrawler.shell.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -46,51 +45,47 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.shell.SystemCommands;
+import schemacrawler.shell.ConnectCommands;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
-public class SystemCommandsIntegrationTest
+public class ConnectCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<SystemCommands> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
+  private static final Class<ConnectCommands> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
 
   @Autowired
   private Shell shell;
 
   @Test
-  public void systemInfo()
+  public void connect()
   {
-    final String command = "system-info";
-    final String commandMethod = "systemInfo";
+    final String command = "connect";
+    final String commandMethod = "connect";
     final Map<String, MethodTarget> commands = shell.listCommands();
     final MethodTarget commandTarget = commands.get(command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(), is("System version information"));
+    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("Connect to a database, using a server specification"));
     assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             int.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(shell.evaluate(() -> command), nullValue());
-  }
-
-  @Test
-  public void version()
-  {
-    final String command = "version";
-    final String commandMethod = "version";
-    final Map<String, MethodTarget> commands = shell.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(), is("SchemaCrawler version information"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(shell.evaluate(() -> command), nullValue());
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -server hsqldb -user sa -database schemacrawler"),
+               is(true));
   }
 
 }
