@@ -99,6 +99,40 @@ public class ConnectCommandsTest
     }
   }
 
+  @Test
+  public void connectUrl()
+    throws SQLException
+  {
+    final String command = "connect-url";
+    final String commandMethod = "connectUrl";
+
+    final Map<String, MethodTarget> commands = registry.listCommands();
+    final MethodTarget commandTarget = commands.get(command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("Connect to a database, using a connection URL"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(invoke(commandTarget,
+                      "jdbc:hsqldb:hsql://localhost:9001/schemacrawler",
+                      "sa",
+                      ""),
+               is(true));
+
+    assertThat(state.getDataSource(), notNullValue());
+    try (final Connection connection = state.getDataSource().getConnection();)
+    {
+      assertThat(connection, notNullValue());
+      assertThat(connection.getCatalog(), is("PUBLIC"));
+    }
+  }
+
   @Before
   public void setup()
   {

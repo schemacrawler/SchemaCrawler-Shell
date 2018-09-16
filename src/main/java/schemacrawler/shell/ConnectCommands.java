@@ -102,7 +102,7 @@ public class ConnectCommands
     return isConnected();
   }
 
-  @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
+  @ShellMethod(value = "Connect to a database, using a connection URL", prefix = "-")
   public boolean connectUrl(@NotNull @ShellOption(value = "-url", help = "JDBC connection URL to the database") final String connectionUrl,
                             @NotNull @ShellOption(help = "Database user name") final String user,
                             @ShellOption(defaultValue = "", help = "Database password") final String password)
