@@ -39,14 +39,14 @@ import schemacrawler.SchemaCrawlerInfo;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("3. SchemaCrawler Commands")
+@ShellCommandGroup("4. System Commands")
 public class SystemCommand
 {
 
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
     .getLogger(SystemCommand.class.getName());
 
-  @ShellMethod(value = "4. System version information")
+  @ShellMethod(value = "System version information")
   public void systemInfo()
     throws Exception
   {
