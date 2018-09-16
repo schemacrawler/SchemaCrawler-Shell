@@ -74,4 +74,20 @@ public class SystemCommandsShellIntegrationTest
     assertThat(shell.evaluate(() -> command), nullValue());
   }
 
+  @Test
+  public void version()
+  {
+    final String command = "version";
+    final String commandMethod = "version";
+    final Map<String, MethodTarget> commands = shell.listCommands();
+    final MethodTarget methodTarget = commands.get(command);
+    assertThat(methodTarget, notNullValue());
+    assertThat(methodTarget.getGroup(), is("4. System Commands"));
+    assertThat(methodTarget.getHelp(), is("SchemaCrawler version information"));
+    assertThat(methodTarget.getMethod(),
+               is(findMethod(SystemCommands.class, commandMethod)));
+    assertThat(methodTarget.getAvailability().isAvailable(), is(true));
+    assertThat(shell.evaluate(() -> command), nullValue());
+  }
+
 }

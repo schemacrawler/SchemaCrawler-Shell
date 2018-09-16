@@ -64,7 +64,7 @@ public class SystemCommandsShellTest
   }
 
   @Test
-  public void testSystemInfo()
+  public void systemInfo()
   {
     final String command = "system-info";
     final String commandMethod = "systemInfo";
@@ -80,8 +80,26 @@ public class SystemCommandsShellTest
     assertThat(invoke(commandTarget), nullValue());
   }
 
+  @Test
+  public void version()
+  {
+    final String command = "version";
+    final String commandMethod = "version";
+
+    final Map<String, MethodTarget> commands = registry.listCommands();
+    final MethodTarget commandTarget = commands.get(command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("SchemaCrawler version information"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(SystemCommands.class, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(invoke(commandTarget), nullValue());
+  }
+
   private Object invoke(final MethodTarget methodTarget,
-                        @Nullable Object... args)
+                        @Nullable final Object... args)
   {
     return invokeMethod(methodTarget.getMethod(), methodTarget.getBean(), args);
   }
