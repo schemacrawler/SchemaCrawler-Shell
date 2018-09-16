@@ -34,8 +34,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +63,8 @@ public class ConnectCommandsIntegrationTest
   {
     final String command = "connect";
     final String commandMethod = "connect";
-    final Map<String, MethodTarget> commands = shell.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
     assertThat(commandTarget.getHelp(),
@@ -86,6 +84,34 @@ public class ConnectCommandsIntegrationTest
       .evaluate(() -> command
                       + " -server hsqldb -user sa -database schemacrawler"),
                is(true));
+
+    // TODO: How can we validate the data source is available?
+  }
+
+  @Test
+  public void connectUrl()
+  {
+    final String command = "connect-url";
+    final String commandMethod = "connectUrl";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("Connect to a database, using a connection URL"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
+               is(true));
+
+    // TODO: How can we validate the data source is available?
   }
 
 }

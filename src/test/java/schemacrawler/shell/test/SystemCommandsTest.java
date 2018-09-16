@@ -35,8 +35,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -70,8 +68,7 @@ public class SystemCommandsTest
     final String command = "system-info";
     final String commandMethod = "systemInfo";
 
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
     assertThat(commandTarget.getHelp(), is("System version information"));
@@ -87,8 +84,7 @@ public class SystemCommandsTest
     final String command = "version";
     final String commandMethod = "version";
 
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
     assertThat(commandTarget.getHelp(),

@@ -36,7 +36,6 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,8 +63,7 @@ public class ConnectCommandsTest
     final String command = "connect";
     final String commandMethod = "connect";
 
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
     assertThat(commandTarget.getHelp(),
@@ -106,8 +104,7 @@ public class ConnectCommandsTest
     final String command = "connect-url";
     final String commandMethod = "connectUrl";
 
-    final Map<String, MethodTarget> commands = registry.listCommands();
-    final MethodTarget commandTarget = commands.get(command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
     assertThat(commandTarget.getHelp(),

@@ -31,7 +31,10 @@ package schemacrawler.shell.test;
 
 import static org.springframework.util.ReflectionUtils.invokeMethod;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.lang.Nullable;
+import org.springframework.shell.CommandRegistry;
 import org.springframework.shell.MethodTarget;
 
 import schemacrawler.test.utility.BaseDatabaseTest;
@@ -40,10 +43,18 @@ public abstract class BaseSchemaCrawlerShellTest
   extends BaseDatabaseTest
 {
 
-  protected Object invoke(final MethodTarget methodTarget,
-                          @Nullable final Object... args)
+  protected <T> T invoke(final MethodTarget methodTarget,
+                         @Nullable final Object... args)
   {
-    return invokeMethod(methodTarget.getMethod(), methodTarget.getBean(), args);
+    return (T) invokeMethod(methodTarget.getMethod(),
+                            methodTarget.getBean(),
+                            args);
+  }
+
+  protected MethodTarget lookupCommand(@NotNull final CommandRegistry registry,
+                                       @NotNull final String command)
+  {
+    return registry.listCommands().get(command);
   }
 
 }
