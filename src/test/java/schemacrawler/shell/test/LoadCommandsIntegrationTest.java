@@ -43,76 +43,48 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.shell.ConnectCommands;
+import schemacrawler.shell.LoadCommands;
+import schemacrawler.tools.options.InfoLevel;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
-public class ConnectCommandsIntegrationTest
+public class LoadCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
 
   @Autowired
   private Shell shell;
 
   @Test
-  public void connect()
+  public void loadCatalog()
   {
-    final String command = "connect";
-    final String commandMethod = "connect";
+    final String command = "load-catalog";
+    final String commandMethod = "loadCatalog";
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a server specification"));
+    assertThat(commandTarget.getGroup(), is("2. Catalog Load Commands"));
+    assertThat(commandTarget.getHelp(), is("Load a catalog"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
-                             String.class,
-                             String.class,
-                             int.class,
-                             String.class,
-                             String.class,
-                             String.class,
-                             String.class)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+                             InfoLevel.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(false));
+
+    // Make a connection
     assertThat(shell
-      .evaluate(() -> command
-                      + " -server hsqldb -user sa -database schemacrawler"),
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
                is(true));
 
-    // TODO: How can we validate the data source is available?
-  }
-
-  @Test
-  public void connectUrl()
-  {
-    final String command = "connect-url";
-    final String commandMethod = "connectUrl";
-
-    final MethodTarget commandTarget = lookupCommand(shell, command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a connection URL"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
-                             commandMethod,
-                             String.class,
-                             String.class,
-                             String.class)));
+    // Now load catalog command should be available, so run it
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(shell
-      .evaluate(() -> command
-                      + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
+    assertThat(shell.evaluate(() -> command + " -infolevel standard"),
                is(true));
-    assertThat(shell.evaluate(() -> "is-connected"), is(true));
-
-    // TODO: How can we validate the data source is available?
+    assertThat(shell.evaluate(() -> "is-loaded"), is(true));
   }
 
 }
