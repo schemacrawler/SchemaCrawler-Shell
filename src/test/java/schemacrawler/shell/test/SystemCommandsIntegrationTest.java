@@ -54,7 +54,7 @@ public class SystemCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<SystemCommands> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
   @Autowired
   private Shell shell;

@@ -49,7 +49,7 @@ public class SystemCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<SystemCommands> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
 

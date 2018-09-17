@@ -34,7 +34,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.Before;
@@ -44,94 +43,46 @@ import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
+import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.shell.ConnectCommands;
+import schemacrawler.shell.LoadCommands;
 import schemacrawler.shell.SchemaCrawlerShellState;
+import schemacrawler.tools.options.InfoLevel;
 
-public class ConnectCommandsTest
+public class LoadCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   private SchemaCrawlerShellState state;
 
   @Test
-  public void connect()
+  public void loadCatalog()
     throws SQLException
   {
-    final String command = "connect";
-    final String commandMethod = "connect";
+    final String command = "load-catalog";
+    final String commandMethod = "loadCatalog";
 
     final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a server specification"));
+    assertThat(commandTarget.getGroup(), is("2. Catalog Load Commands"));
+    assertThat(commandTarget.getHelp(), is("Load a catalog"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
-                             String.class,
-                             String.class,
-                             int.class,
-                             String.class,
-                             String.class,
-                             String.class,
-                             String.class)));
+                             InfoLevel.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget,
-                      "hsqldb",
-                      "",
-                      0,
-                      "schemacrawler",
-                      "",
-                      "sa",
-                      ""),
-               is(true));
+    assertThat(invoke(commandTarget, InfoLevel.standard), is(true));
 
-    assertThat(state.getDataSource(), notNullValue());
-    try (final Connection connection = state.getDataSource().getConnection();)
-    {
-      assertThat(connection, notNullValue());
-      assertThat(connection.getCatalog(), is("PUBLIC"));
-    }
-  }
-
-  @Test
-  public void connectUrl()
-    throws SQLException
-  {
-    final String command = "connect-url";
-    final String commandMethod = "connectUrl";
-
-    final MethodTarget commandTarget = lookupCommand(registry, command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a connection URL"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
-                             commandMethod,
-                             String.class,
-                             String.class,
-                             String.class)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget,
-                      "jdbc:hsqldb:hsql://localhost:9001/schemacrawler",
-                      "sa",
-                      ""),
-               is(true));
-
-    assertThat(state.getDataSource(), notNullValue());
-    try (final Connection connection = state.getDataSource().getConnection();)
-    {
-      assertThat(connection, notNullValue());
-      assertThat(connection.getCatalog(), is("PUBLIC"));
-    }
+    assertThat(state.getCatalog(), notNullValue());
+    assertThat(state.getCatalog().getTables().size(), is(19));
   }
 
   @Before
   public void setup()
+    throws SchemaCrawlerException, SQLException
   {
     final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
     context.registerBean("state", SchemaCrawlerShellState.class);
@@ -142,6 +93,11 @@ public class ConnectCommandsTest
     final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);
+
+    // Create a connection
+    final ConnectCommands connectCommands = new ConnectCommands(state);
+    connectCommands
+      .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
   }
 
 }

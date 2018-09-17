@@ -53,7 +53,7 @@ public class ConnectCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<ConnectCommands> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
 
   @Autowired
   private Shell shell;
