@@ -117,6 +117,12 @@ public class ConnectCommands
     return isConnected();
   }
 
+  @ShellMethod(value = "Disconnect from a database, and clear loaded catalog", prefix = "-")
+  public void disconnect()
+  {
+    state.disconnect();
+  }
+
   @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
   public boolean isConnected()
   {

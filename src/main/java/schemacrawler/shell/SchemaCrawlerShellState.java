@@ -48,6 +48,32 @@ public class SchemaCrawlerShellState
   private SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder;
   private SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder;
 
+  public void clear()
+  {
+    catalog = null;
+    additionalConfiguration = null;
+    schemaCrawlerOptionsBuilder = null;
+    schemaRetrievalOptionsBuilder = null;
+
+    disconnect();
+  }
+
+  public void disconnect()
+  {
+    if (dataSource instanceof AutoCloseable)
+    {
+      try
+      {
+        ((AutoCloseable) dataSource).close();
+      }
+      catch (final Exception e)
+      {
+        // Ignore errors
+      }
+    }
+    dataSource = null;
+  }
+
   public Config getAdditionalConfiguration()
   {
     return additionalConfiguration;

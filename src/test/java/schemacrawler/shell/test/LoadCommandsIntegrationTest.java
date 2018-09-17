@@ -31,9 +31,12 @@ package schemacrawler.shell.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,21 @@ public class LoadCommandsIntegrationTest
   @Autowired
   private Shell shell;
 
+  @Before
+  public void connect()
+  {
+    assertThat(shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
+               is(true));
+  }
+
+  @After
+  public void disconnect()
+  {
+    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  }
+
   @Test
   public void loadCatalog()
   {
@@ -73,15 +91,9 @@ public class LoadCommandsIntegrationTest
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
                              InfoLevel.class)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(false));
-
-    // Make a connection
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
-
-    // Now load catalog command should be available, so run it
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    assertThat(shell.evaluate(() -> "is-loaded"), is(false));
     assertThat(shell.evaluate(() -> command + " -infolevel standard"),
                is(true));
     assertThat(shell.evaluate(() -> "is-loaded"), is(true));

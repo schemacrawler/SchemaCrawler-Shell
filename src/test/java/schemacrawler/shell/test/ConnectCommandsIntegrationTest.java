@@ -31,6 +31,7 @@ package schemacrawler.shell.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -80,12 +81,16 @@ public class ConnectCommandsIntegrationTest
                              String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
     assertThat(shell
       .evaluate(() -> command
                       + " -server hsqldb -user sa -database schemacrawler"),
                is(true));
+    assertThat(shell.evaluate(() -> "is-connected"), is(true));
 
-    // TODO: How can we validate the data source is available?
+    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
   }
 
   @Test
@@ -106,13 +111,16 @@ public class ConnectCommandsIntegrationTest
                              String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
     assertThat(shell
       .evaluate(() -> command
                       + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
                is(true));
     assertThat(shell.evaluate(() -> "is-connected"), is(true));
 
-    // TODO: How can we validate the data source is available?
+    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
   }
 
 }
