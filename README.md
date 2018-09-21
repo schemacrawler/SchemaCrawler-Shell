@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sualeh/SchemaCrawler-Shell.svg?branch=master)](https://travis-ci.org/sualeh/SchemaCrawler-Shell)
+[![Build Status](https://travis-ci.org/schemacrawler/SchemaCrawler-Shell.svg?branch=master)](https://travis-ci.org/schemacrawler/SchemaCrawler-Shell)
 
 # SchemaCrawler Interactive Shell
 
