@@ -79,42 +79,54 @@ public class ConnectCommands
                          @ShellOption(defaultValue = "", help = "Additional properties for the JDBC driver") final String urlx,
                          @NotNull @ShellOption(help = "Database user name") final String user,
                          @ShellOption(defaultValue = "", help = "Database password") final String password)
-    throws SchemaCrawlerException, SQLException
   {
-    lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
-    loadConfig();
-    loadSchemaCrawlerOptionsBuilder();
+    try
+    {
+      lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
+      loadConfig();
+      loadSchemaCrawlerOptionsBuilder();
 
-    final SingleUseUserCredentials userCredentials = new SingleUseUserCredentials(user,
-                                                                                  password);
-    final DatabaseConfigConnectionOptions connectionOptions = new DatabaseConfigConnectionOptions(userCredentials,
-                                                                                                  config);
-    connectionOptions.setDatabase(database);
-    connectionOptions.setHost(host);
-    connectionOptions.setPort(port);
-    connectionOptions.setUrlX(urlx);
+      final SingleUseUserCredentials userCredentials = new SingleUseUserCredentials(user,
+                                                                                    password);
+      final DatabaseConfigConnectionOptions connectionOptions = new DatabaseConfigConnectionOptions(userCredentials,
+                                                                                                    config);
+      connectionOptions.setDatabase(database);
+      connectionOptions.setHost(host);
+      connectionOptions.setPort(port);
+      connectionOptions.setUrlX(urlx);
 
-    final String connectionUrl = connectionOptions.getConnectionUrl();
+      final String connectionUrl = connectionOptions.getConnectionUrl();
 
-    createDataSource(connectionUrl, user, password);
-    loadSchemaRetrievalOptionsBuilder();
+      createDataSource(connectionUrl, user, password);
+      loadSchemaRetrievalOptionsBuilder();
 
-    return isConnected();
+      return isConnected();
+    }
+    catch (final SchemaCrawlerException | SQLException e)
+    {
+      throw new RuntimeException("Cannot connect to database", e);
+    }
   }
 
   @ShellMethod(value = "Connect to a database, using a connection URL", prefix = "-")
   public boolean connectUrl(@NotNull @ShellOption(value = "-url", help = "JDBC connection URL to the database") final String connectionUrl,
                             @NotNull @ShellOption(help = "Database user name") final String user,
                             @ShellOption(defaultValue = "", help = "Database password") final String password)
-    throws SchemaCrawlerException, SQLException
   {
-    lookupDatabaseConnectorFromUrl(connectionUrl);
-    loadConfig();
-    loadSchemaCrawlerOptionsBuilder();
-    createDataSource(connectionUrl, user, password);
-    loadSchemaRetrievalOptionsBuilder();
+    try
+    {
+      lookupDatabaseConnectorFromUrl(connectionUrl);
+      loadConfig();
+      loadSchemaCrawlerOptionsBuilder();
+      createDataSource(connectionUrl, user, password);
+      loadSchemaRetrievalOptionsBuilder();
 
-    return isConnected();
+      return isConnected();
+    }
+    catch (final SchemaCrawlerException | SQLException e)
+    {
+      throw new RuntimeException("Cannot connect to database", e);
+    }
   }
 
   @ShellMethod(value = "Disconnect from a database, and clear loaded catalog", prefix = "-")
