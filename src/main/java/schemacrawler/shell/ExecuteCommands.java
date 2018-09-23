@@ -41,6 +41,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
+import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.tools.executable.CommandRegistry;
@@ -62,12 +63,18 @@ public class ExecuteCommands
 
   @ShellMethod(value = "List available SchemaCrawler commands", prefix = "-")
   public void commands()
-    throws Exception
   {
-    final CommandRegistry registry = new CommandRegistry();
-    for (final String command: registry)
+    try
     {
-      System.out.println(command);
+      final CommandRegistry registry = new CommandRegistry();
+      for (final String command: registry)
+      {
+        System.out.println(command);
+      }
+    }
+    catch (final SchemaCrawlerException e)
+    {
+      throw new RuntimeException("Cannot find SchemaCrawler commands", e);
     }
   }
 
@@ -76,7 +83,6 @@ public class ExecuteCommands
                       @ShellOption(help = "Whether to sort tables") boolean sorttables,
                       @ShellOption(help = "Whether to sort table columns") boolean sortcolumns,
                       @ShellOption(help = "Whether to routine parameters") boolean sortinout)
-    throws Exception
   {
     try (Connection connection = state.getDataSource().getConnection();)
     {
@@ -95,6 +101,10 @@ public class ExecuteCommands
       executable.setConnection(connection);
       executable.setSchemaRetrievalOptions(schemaRetrievalOptions);
       executable.execute();
+    }
+    catch (final Exception e)
+    {
+      throw new RuntimeException("Cannot execute SchemaCrawler command", e);
     }
   }
 

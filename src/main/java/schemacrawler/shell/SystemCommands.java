@@ -48,7 +48,6 @@ public class SystemCommands
 
   @ShellMethod(value = "System version information")
   public void systemInfo()
-    throws Exception
   {
     final SchemaCrawlerInfo scInfo = new SchemaCrawlerInfo();
     System.out.println(scInfo);
@@ -60,7 +59,6 @@ public class SystemCommands
 
   @ShellMethod(value = "SchemaCrawler version information")
   public void version()
-    throws Exception
   {
     final SchemaCrawlerInfo scInfo = new SchemaCrawlerInfo();
     System.out.println(scInfo);
