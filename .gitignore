@@ -24,3 +24,8 @@
 /nbdist/
 /.nb-gradle/
 /spring-shell.log
+/hsqldb.schemacrawler.lck
+/hsqldb.schemacrawler.lobs
+/hsqldb.schemacrawler.log
+/hsqldb.schemacrawler.properties
+/hsqldb.schemacrawler.script
