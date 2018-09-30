@@ -44,6 +44,7 @@ import org.springframework.shell.standard.ShellOption;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
+import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;
 import schemacrawler.tools.options.OutputOptions;
@@ -67,7 +68,7 @@ public class ExecuteCommands
     try
     {
       final CommandRegistry registry = new CommandRegistry();
-      for (final String command: registry)
+      for (final CommandDescription command: registry)
       {
         System.out.println(command);
       }

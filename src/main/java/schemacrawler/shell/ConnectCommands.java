@@ -44,6 +44,7 @@ import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.DatabaseConfigConnectionOptions;
+import schemacrawler.schemacrawler.DatabaseServerType;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
@@ -159,7 +160,7 @@ public class ConnectCommands
     throws Exception
   {
     final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
-    for (final String server: registry)
+    for (final DatabaseServerType server: registry)
     {
       System.out.println(server);
     }
