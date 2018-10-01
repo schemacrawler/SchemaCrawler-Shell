@@ -77,6 +77,29 @@ public class TextOutputCommandsIntegrationTest
   }
 
   @Test
+  public void show()
+  {
+    final String command = "show";
+    final String commandMethod = "show";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Show output"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    shell.evaluate(() -> command + " -portablenames true");
+    // TODO: Verify that the command succeeded
+  }
+
+  @Test
   public void sort()
   {
     final String command = "sort";

@@ -39,6 +39,7 @@ import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
+import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
@@ -52,10 +53,42 @@ public class TextOutputCommands
   @Autowired
   private SchemaCrawlerShellState state;
 
+  @ShellMethodAvailability
+  public Availability isConnected()
+  {
+    final boolean isConnected = new ConnectCommands(state).isConnected();
+    return isConnected? Availability.available(): Availability
+      .unavailable("there is no database connection");
+  }
+
+  @ShellMethod(value = "Show output", prefix = "-")
+  public void show(@ShellOption(help = "Whether to sort tables") final boolean noinfo,
+                   @ShellOption(help = "Whether to sort table columns") final boolean noremarks,
+                   @ShellOption(help = "Whether to routine parameters") final boolean weakassociations,
+                   @ShellOption(help = "Whether to routine parameters") final boolean portablenames)
+  {
+    try
+    {
+      final Config config = state.getAdditionalConfiguration();
+
+      final SchemaTextOptionsBuilder textOptionsBuilder = SchemaTextOptionsBuilder
+        .builder().fromConfig(config);
+      textOptionsBuilder.noInfo(noinfo).noRemarks(noremarks)
+        .weakAssociations(weakassociations).portableNames(portablenames);
+      config.putAll(textOptionsBuilder.toConfig());
+
+      state.setAdditionalConfiguration(config);
+    }
+    catch (final Exception e)
+    {
+      throw new RuntimeException("Cannot set sort commands", e);
+    }
+  }
+
   @ShellMethod(value = "Sort output", prefix = "-")
-  public void sort(@ShellOption(help = "Whether to sort tables", defaultValue = "true") boolean sorttables,
-                   @ShellOption(help = "Whether to sort table columns") boolean sortcolumns,
-                   @ShellOption(help = "Whether to routine parameters") boolean sortinout)
+  public void sort(@ShellOption(help = "Whether to sort tables", defaultValue = "true") final boolean sorttables,
+                   @ShellOption(help = "Whether to sort table columns") final boolean sortcolumns,
+                   @ShellOption(help = "Whether to routine parameters") final boolean sortinout)
   {
     try
     {
@@ -73,14 +106,6 @@ public class TextOutputCommands
     {
       throw new RuntimeException("Cannot set sort commands", e);
     }
-  }
-
-  @ShellMethodAvailability
-  public Availability isConnected()
-  {
-    final boolean isConnected = new ConnectCommands(state).isConnected();
-    return isConnected? Availability.available(): Availability
-      .unavailable("there is no database connection");
   }
 
 }

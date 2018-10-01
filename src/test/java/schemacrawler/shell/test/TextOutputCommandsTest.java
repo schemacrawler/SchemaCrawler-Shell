@@ -50,6 +50,8 @@ import schemacrawler.shell.SchemaCrawlerShellState;
 import schemacrawler.shell.TextOutputCommands;
 import schemacrawler.tools.text.base.CommonTextOptions;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
+import schemacrawler.tools.text.schema.SchemaTextOptions;
+import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 
 public class TextOutputCommandsTest
   extends BaseSchemaCrawlerShellTest
@@ -59,6 +61,47 @@ public class TextOutputCommandsTest
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   private SchemaCrawlerShellState state;
+
+  @Test
+  public void show()
+    throws SQLException
+  {
+    final String command = "show";
+    final String commandMethod = "show";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Show output"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    // Check state before invoking command
+    final Config preConfig = state.getAdditionalConfiguration();
+    SchemaTextOptions preOptions = SchemaTextOptionsBuilder.builder()
+      .fromConfig(preConfig).toOptions();
+    assertThat(preOptions.isNoInfo(), is(false));
+    assertThat(preOptions.isHideRemarks(), is(false));
+    assertThat(preOptions.isShowWeakAssociations(), is(false));
+    assertThat(preOptions.isHideIndexNames(), is(false));
+
+    invoke(commandTarget, true, true, true, true);
+
+    // Check state after invoking command
+    final Config postConfig = state.getAdditionalConfiguration();
+    SchemaTextOptions postOptions = SchemaTextOptionsBuilder.builder()
+      .fromConfig(postConfig).toOptions();
+    assertThat(postOptions.isNoInfo(), is(true));
+    assertThat(postOptions.isHideRemarks(), is(true));
+    assertThat(postOptions.isShowWeakAssociations(), is(true));
+    assertThat(postOptions.isHideIndexNames(), is(true));
+  }
 
   @Test
   public void sort()
