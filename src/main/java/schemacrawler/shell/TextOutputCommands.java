@@ -62,10 +62,10 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Show output", prefix = "-")
-  public void show(@ShellOption(help = "Whether to sort tables") final boolean noinfo,
-                   @ShellOption(help = "Whether to sort table columns") final boolean noremarks,
-                   @ShellOption(help = "Whether to routine parameters") final boolean weakassociations,
-                   @ShellOption(help = "Whether to routine parameters") final boolean portablenames)
+  public void show(@ShellOption(help = "Whether to sort tables", defaultValue = "false") final boolean noinfo,
+                   @ShellOption(help = "Whether to sort table columns", defaultValue = "false") final boolean noremarks,
+                   @ShellOption(help = "Whether to routine parameters", defaultValue = "false") final boolean weakassociations,
+                   @ShellOption(help = "Whether to routine parameters", defaultValue = "false") final boolean portablenames)
   {
     try
     {
@@ -87,8 +87,8 @@ public class TextOutputCommands
 
   @ShellMethod(value = "Sort output", prefix = "-")
   public void sort(@ShellOption(help = "Whether to sort tables", defaultValue = "true") final boolean sorttables,
-                   @ShellOption(help = "Whether to sort table columns") final boolean sortcolumns,
-                   @ShellOption(help = "Whether to routine parameters") final boolean sortinout)
+                   @ShellOption(help = "Whether to sort table columns", defaultValue = "false") final boolean sortcolumns,
+                   @ShellOption(help = "Whether to routine parameters", defaultValue = "false") final boolean sortinout)
   {
     try
     {
