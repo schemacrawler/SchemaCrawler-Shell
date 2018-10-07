@@ -60,6 +60,26 @@ public class FilterCommands
       .unavailable("there is no database connection");
   }
 
+  @ShellMethod(value = "Filter database object metadata", prefix = "-")
+  public void filter(@ShellOption(defaultValue = "false", help = "Include only tables that have rows of data") final boolean noemptytables,
+                     @ShellOption(defaultValue = "0", help = "Number of generations of ancestors for the tables selected by grep") int parents,
+                     @ShellOption(defaultValue = "0", help = "Number of generations of descendents for the tables selected by grep") int children)
+  {
+    try
+    {
+      final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
+        .getSchemaCrawlerOptionsBuilder();
+
+      schemaCrawlerOptionsBuilder.noEmptyTables(noemptytables);
+      schemaCrawlerOptionsBuilder.parentTableFilterDepth(parents);
+      schemaCrawlerOptionsBuilder.childTableFilterDepth(children);
+    }
+    catch (final Exception e)
+    {
+      throw new RuntimeException("Cannot set filter options", e);
+    }
+  }
+
   @ShellMethod(value = "Grep database object metadata", prefix = "-")
   public void grep(@ShellOption(defaultValue = "", help = "grep for tables with column names matching pattern") final String grepcolumns,
                    @ShellOption(defaultValue = "", help = "grep for routines with parameter names matching pattern") final String grepinout,

@@ -77,6 +77,28 @@ public class FilterCommandsIntegrationTest
   }
 
   @Test
+  public void filter()
+  {
+    final String command = "filter";
+    final String commandMethod = "filter";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getHelp(), is("Filter database object metadata"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             boolean.class,
+                             int.class,
+                             int.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    shell.evaluate(() -> command + " -children 1");
+    // TODO: Verify that the command succeeded
+  }
+
+  @Test
   public void grep()
   {
     final String command = "grep";

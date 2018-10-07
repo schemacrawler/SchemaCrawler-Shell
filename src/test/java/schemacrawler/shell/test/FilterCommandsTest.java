@@ -59,6 +59,42 @@ public class FilterCommandsTest
   private SchemaCrawlerShellState state;
 
   @Test
+  public void filter()
+    throws SQLException
+  {
+    final String command = "filter";
+    final String commandMethod = "filter";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getHelp(), is("Filter database object metadata"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             boolean.class,
+                             int.class,
+                             int.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    // Check state before invoking command
+    SchemaCrawlerOptions preOptions = state.getSchemaCrawlerOptionsBuilder()
+      .toOptions();
+    assertThat(preOptions.isNoEmptyTables(), is(false));
+    assertThat(preOptions.getChildTableFilterDepth(), is(0));
+    assertThat(preOptions.getParentTableFilterDepth(), is(0));
+
+    invoke(commandTarget, true, 1, 1);
+
+    // Check state after invoking command
+    SchemaCrawlerOptions postOptions = state.getSchemaCrawlerOptionsBuilder()
+      .toOptions();
+    assertThat(postOptions.isNoEmptyTables(), is(true));
+    assertThat(postOptions.getChildTableFilterDepth(), is(1));
+    assertThat(postOptions.getParentTableFilterDepth(), is(1));
+  }
+
+  @Test
   public void grep()
     throws SQLException
   {
