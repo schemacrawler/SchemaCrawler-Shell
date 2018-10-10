@@ -43,6 +43,8 @@ import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
+import schemacrawler.schemacrawler.InclusionRule;
+import schemacrawler.schemacrawler.InclusionRuleWithRegularExpression;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.ConnectCommands;
@@ -78,8 +80,8 @@ public class FilterCommandsTest
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
     // Check state before invoking command
-    SchemaCrawlerOptions preOptions = state.getSchemaCrawlerOptionsBuilder()
-      .toOptions();
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(preOptions.isNoEmptyTables(), is(false));
     assertThat(preOptions.getChildTableFilterDepth(), is(0));
     assertThat(preOptions.getParentTableFilterDepth(), is(0));
@@ -87,8 +89,8 @@ public class FilterCommandsTest
     invoke(commandTarget, true, 1, 1);
 
     // Check state after invoking command
-    SchemaCrawlerOptions postOptions = state.getSchemaCrawlerOptionsBuilder()
-      .toOptions();
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(postOptions.isNoEmptyTables(), is(true));
     assertThat(postOptions.getChildTableFilterDepth(), is(1));
     assertThat(postOptions.getParentTableFilterDepth(), is(1));
@@ -116,8 +118,8 @@ public class FilterCommandsTest
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
     // Check state before invoking command
-    SchemaCrawlerOptions preOptions = state.getSchemaCrawlerOptionsBuilder()
-      .toOptions();
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(preOptions.isGrepColumns(), is(false));
     assertThat(preOptions.isGrepRoutineColumns(), is(false));
     assertThat(preOptions.isGrepDefinitions(), is(false));
@@ -127,20 +129,75 @@ public class FilterCommandsTest
     invoke(commandTarget, "t.*t", "t.*t", "t.*t", true, true);
 
     // Check state after invoking command
-    SchemaCrawlerOptions postOptions = state.getSchemaCrawlerOptionsBuilder()
-      .toOptions();
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(postOptions.isGrepColumns(), is(true));
     assertThat(postOptions.isGrepRoutineColumns(), is(true));
     assertThat(postOptions.isGrepDefinitions(), is(true));
     assertThat(postOptions.isGrepInvertMatch(), is(true));
     assertThat(postOptions.isGrepOnlyMatching(), is(true));
 
-    assertThat(postOptions.getGrepColumnInclusionRule().get().test("test"),
-               is(true));
-    assertThat(postOptions.getGrepRoutineColumnInclusionRule().get()
-      .test("test"), is(true));
-    assertThat(postOptions.getGrepDefinitionInclusionRule().get().test("test"),
-               is(true));
+    assertThat(getPattern(postOptions.getGrepColumnInclusionRule().get()),
+               is("t.*t"));
+    assertThat(getPattern(postOptions.getGrepRoutineColumnInclusionRule()
+      .get()), is("t.*t"));
+    assertThat(getPattern(postOptions.getGrepDefinitionInclusionRule().get()),
+               is("t.*t"));
+  }
+
+  @Test
+  public void limit()
+    throws SQLException
+  {
+    final String command = "limit";
+    final String commandMethod = "limit";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getHelp(), is("Limit database object metadata"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(getPattern(preOptions.getSchemaInclusionRule()), is(".*"));
+    assertThat(getPattern(preOptions.getTableInclusionRule()), is(".*"));
+    assertThat(getPattern(preOptions.getRoutineInclusionRule()), is(""));
+    assertThat(getPattern(preOptions.getSynonymInclusionRule()), is(""));
+    assertThat(getPattern(preOptions.getSequenceInclusionRule()), is(""));
+
+    invoke(commandTarget,
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t",
+           "t.*t");
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(getPattern(postOptions.getSchemaInclusionRule()), is("t.*t"));
+    assertThat(getPattern(postOptions.getTableInclusionRule()), is("t.*t"));
+    assertThat(getPattern(postOptions.getRoutineInclusionRule()), is("t.*t"));
+    assertThat(getPattern(postOptions.getSynonymInclusionRule()), is("t.*t"));
+    assertThat(getPattern(postOptions.getSequenceInclusionRule()), is("t.*t"));
   }
 
   @Before
@@ -161,6 +218,12 @@ public class FilterCommandsTest
     final ConnectCommands connectCommands = new ConnectCommands(state);
     connectCommands
       .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
+  }
+
+  private String getPattern(final InclusionRule inclusionRule)
+  {
+    return ((InclusionRuleWithRegularExpression) inclusionRule)
+      .getInclusionPattern().pattern();
   }
 
 }

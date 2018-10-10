@@ -122,4 +122,32 @@ public class FilterCommandsIntegrationTest
     // TODO: Verify that the command succeeded
   }
 
+  @Test
+  public void limit()
+  {
+    final String command = "limit";
+    final String commandMethod = "limit";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getHelp(), is("Limit database object metadata"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    shell.evaluate(() -> command + " -schemas .*");
+    // TODO: Verify that the command succeeded
+  }
+
 }

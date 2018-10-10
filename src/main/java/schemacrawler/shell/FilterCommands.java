@@ -37,6 +37,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
+import schemacrawler.schemacrawler.RegularExpressionExclusionRule;
 import schemacrawler.schemacrawler.RegularExpressionInclusionRule;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
@@ -52,18 +53,10 @@ public class FilterCommands
   @Autowired
   private SchemaCrawlerShellState state;
 
-  @ShellMethodAvailability
-  public Availability isConnected()
-  {
-    final boolean isConnected = new ConnectCommands(state).isConnected();
-    return isConnected? Availability.available(): Availability
-      .unavailable("there is no database connection");
-  }
-
   @ShellMethod(value = "Filter database object metadata", prefix = "-")
   public void filter(@ShellOption(defaultValue = "false", help = "Include only tables that have rows of data") final boolean noemptytables,
-                     @ShellOption(defaultValue = "0", help = "Number of generations of ancestors for the tables selected by grep") int parents,
-                     @ShellOption(defaultValue = "0", help = "Number of generations of descendents for the tables selected by grep") int children)
+                     @ShellOption(defaultValue = "0", help = "Number of generations of ancestors for the tables selected by grep") final int parents,
+                     @ShellOption(defaultValue = "0", help = "Number of generations of descendents for the tables selected by grep") final int children)
   {
     try
     {
@@ -105,6 +98,53 @@ public class FilterCommands
     catch (final Exception e)
     {
       throw new RuntimeException("Cannot set grep options", e);
+    }
+  }
+
+  @ShellMethodAvailability
+  public Availability isConnected()
+  {
+    final boolean isConnected = new ConnectCommands(state).isConnected();
+    return isConnected? Availability.available(): Availability
+      .unavailable("there is no database connection");
+  }
+
+  @ShellMethod(value = "Limit database object metadata", prefix = "-")
+  public void limit(@ShellOption(defaultValue = ".*", help = "Regular expression to match fully qualified names of schemas to include") final String schemas,
+                    @ShellOption(defaultValue = "", help = "Comma-separated list of table types") final String tabletypes,
+                    @ShellOption(defaultValue = ".*", help = "Regular expression to match fully qualified names of tables to include") final String tables,
+                    @ShellOption(defaultValue = "", help = "Regular expression to match fully qualified names of columns to exclude") final String excludecolumns,
+                    @ShellOption(defaultValue = "", help = "Comma-separated list of routine types") final String routinetypes,
+                    @ShellOption(defaultValue = "", help = "Regular expression to match fully qualified names of routines to include") final String routines,
+                    @ShellOption(defaultValue = "", help = "Regular expression to match fully qualified names of parameters to exclude") final String excludeinout,
+                    @ShellOption(defaultValue = "", help = "Regular expression to match fully qualified names of synonyms to include") final String synonyms,
+                    @ShellOption(defaultValue = "", help = "Regular expression to match fully qualified names of sequences to include") final String sequences)
+  {
+    try
+    {
+      final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
+        .getSchemaCrawlerOptionsBuilder();
+
+      schemaCrawlerOptionsBuilder
+        .includeSchemas(new RegularExpressionInclusionRule(schemas));
+
+      schemaCrawlerOptionsBuilder.tableTypes(tabletypes)
+        .includeTables(new RegularExpressionInclusionRule(tables))
+        .includeColumns(new RegularExpressionExclusionRule(excludecolumns));
+
+      schemaCrawlerOptionsBuilder.routineTypes(routinetypes)
+        .includeRoutines(new RegularExpressionInclusionRule(routines))
+        .includeRoutineColumns(new RegularExpressionExclusionRule(excludeinout));
+
+      schemaCrawlerOptionsBuilder
+        .includeSynonyms(new RegularExpressionInclusionRule(synonyms));
+
+      schemaCrawlerOptionsBuilder
+        .includeSequences(new RegularExpressionInclusionRule(sequences));
+    }
+    catch (final Exception e)
+    {
+      throw new RuntimeException("Cannot set limit options", e);
     }
   }
 

@@ -62,6 +62,26 @@ public class TextOutputCommandsTest
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   private SchemaCrawlerShellState state;
 
+  @Before
+  public void setup()
+    throws SchemaCrawlerException, SQLException
+  {
+    final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    context.registerBean("state", SchemaCrawlerShellState.class);
+    context.register(COMMANDS_CLASS_UNDER_TEST);
+    context.refresh();
+    state = (SchemaCrawlerShellState) context.getBean("state");
+
+    final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
+    registrar.setApplicationContext(context);
+    registrar.register(registry);
+
+    // Create a connection
+    final ConnectCommands connectCommands = new ConnectCommands(state);
+    connectCommands
+      .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
+  }
+
   @Test
   public void show()
     throws SQLException
@@ -84,7 +104,7 @@ public class TextOutputCommandsTest
 
     // Check state before invoking command
     final Config preConfig = state.getAdditionalConfiguration();
-    SchemaTextOptions preOptions = SchemaTextOptionsBuilder.builder()
+    final SchemaTextOptions preOptions = SchemaTextOptionsBuilder.builder()
       .fromConfig(preConfig).toOptions();
     assertThat(preOptions.isNoInfo(), is(false));
     assertThat(preOptions.isHideRemarks(), is(false));
@@ -95,7 +115,7 @@ public class TextOutputCommandsTest
 
     // Check state after invoking command
     final Config postConfig = state.getAdditionalConfiguration();
-    SchemaTextOptions postOptions = SchemaTextOptionsBuilder.builder()
+    final SchemaTextOptions postOptions = SchemaTextOptionsBuilder.builder()
       .fromConfig(postConfig).toOptions();
     assertThat(postOptions.isNoInfo(), is(true));
     assertThat(postOptions.isHideRemarks(), is(true));
@@ -124,7 +144,7 @@ public class TextOutputCommandsTest
 
     // Check state before invoking command
     final Config preConfig = state.getAdditionalConfiguration();
-    CommonTextOptions preOptions = CommonTextOptionsBuilder.builder()
+    final CommonTextOptions preOptions = CommonTextOptionsBuilder.builder()
       .fromConfig(preConfig).toOptions();
     assertThat(preOptions.isAlphabeticalSortForTables(), is(true));
     assertThat(preOptions.isAlphabeticalSortForTableColumns(), is(false));
@@ -134,31 +154,11 @@ public class TextOutputCommandsTest
 
     // Check state after invoking command
     final Config postConfig = state.getAdditionalConfiguration();
-    CommonTextOptions postOptions = CommonTextOptionsBuilder.builder()
+    final CommonTextOptions postOptions = CommonTextOptionsBuilder.builder()
       .fromConfig(postConfig).toOptions();
     assertThat(postOptions.isAlphabeticalSortForTables(), is(false));
     assertThat(postOptions.isAlphabeticalSortForTableColumns(), is(true));
     assertThat(postOptions.isAlphabeticalSortForRoutineColumns(), is(true));
-  }
-
-  @Before
-  public void setup()
-    throws SchemaCrawlerException, SQLException
-  {
-    final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.registerBean("state", SchemaCrawlerShellState.class);
-    context.register(COMMANDS_CLASS_UNDER_TEST);
-    context.refresh();
-    state = (SchemaCrawlerShellState) context.getBean("state");
-
-    final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
-    registrar.setApplicationContext(context);
-    registrar.register(registry);
-
-    // Create a connection
-    final ConnectCommands connectCommands = new ConnectCommands(state);
-    connectCommands
-      .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
   }
 
 }
