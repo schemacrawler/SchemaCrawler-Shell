@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell;
+package schemacrawler.shell.commands;
 
 
 import java.sql.Connection;
@@ -49,6 +49,7 @@ import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
 import schemacrawler.schemacrawler.SingleUseUserCredentials;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.databaseconnector.DatabaseConnector;
 import schemacrawler.tools.databaseconnector.DatabaseConnectorRegistry;
 import sf.util.SchemaCrawlerLogger;

@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell;
+package schemacrawler.shell.commands;
 
 
 import static sf.util.Utility.isBlank;
@@ -43,6 +43,7 @@ import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.options.OutputOptionsBuilder;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;

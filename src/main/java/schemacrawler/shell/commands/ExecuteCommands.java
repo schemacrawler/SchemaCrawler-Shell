@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell;
+package schemacrawler.shell.commands;
 
 
 import java.sql.Connection;
@@ -44,6 +44,7 @@ import org.springframework.shell.standard.ShellOption;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;

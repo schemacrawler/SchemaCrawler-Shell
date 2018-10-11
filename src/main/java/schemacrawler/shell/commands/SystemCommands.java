@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell;
+package schemacrawler.shell.commands;
 
 
 import org.springframework.shell.standard.ShellCommandGroup;

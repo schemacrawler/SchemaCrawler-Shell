@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell;
+package schemacrawler.shell.commands;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,7 @@ import org.springframework.shell.standard.ShellOption;
 import schemacrawler.schemacrawler.RegularExpressionExclusionRule;
 import schemacrawler.schemacrawler.RegularExpressionInclusionRule;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent

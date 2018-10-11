@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.unit;
 
 
 import static org.hamcrest.core.Is.is;
@@ -50,9 +50,10 @@ import schemacrawler.schemacrawler.InclusionRule;
 import schemacrawler.schemacrawler.InclusionRuleWithRegularExpression;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
-import schemacrawler.shell.ConnectCommands;
-import schemacrawler.shell.FilterCommands;
-import schemacrawler.shell.SchemaCrawlerShellState;
+import schemacrawler.shell.commands.ConnectCommands;
+import schemacrawler.shell.commands.FilterCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
 public class FilterCommandsTest
   extends BaseSchemaCrawlerShellTest

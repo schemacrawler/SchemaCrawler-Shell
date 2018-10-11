@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
@@ -46,7 +46,8 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.shell.FilterCommands;
+import schemacrawler.shell.commands.FilterCommands;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {

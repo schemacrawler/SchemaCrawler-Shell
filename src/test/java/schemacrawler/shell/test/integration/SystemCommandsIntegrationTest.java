@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
@@ -35,8 +35,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,57 +44,53 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.shell.LoadCommands;
-import schemacrawler.tools.options.InfoLevel;
+import schemacrawler.shell.commands.SystemCommands;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
-public class LoadCommandsIntegrationTest
+public class SystemCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
   @Autowired
   private Shell shell;
 
-  @Before
-  public void connect()
-  {
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
-  }
-
   @Test
-  public void loadCatalog()
+  public void systemInfo()
   {
-    final String command = "load-catalog";
-    final String commandMethod = "loadCatalog";
+    final String command = "system-info";
+    final String commandMethod = "systemInfo";
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("2. Catalog Load Commands"));
-    assertThat(commandTarget.getHelp(), is("Load a catalog"));
+    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getHelp(), is("System version information"));
     assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
-                             commandMethod,
-                             InfoLevel.class)));
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-
-    assertThat(shell.evaluate(() -> "is-loaded"), is(false));
-    assertThat(shell.evaluate(() -> command + " -infolevel standard"),
-               is(true));
-    assertThat(shell.evaluate(() -> "is-loaded"), is(true));
+    assertThat(shell.evaluate(() -> command), nullValue());
   }
 
-  @After
-  public void sweep()
+  @Test
+  public void version()
   {
-    assertThat(shell.evaluate(() -> "sweep"), nullValue());
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
+    final String command = "version";
+    final String commandMethod = "version";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("SchemaCrawler version information"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(shell.evaluate(() -> command), nullValue());
   }
 
 }

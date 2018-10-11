@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
@@ -35,6 +35,8 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,83 +46,114 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.shell.ConnectCommands;
+import schemacrawler.shell.commands.TextOutputCommands;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
-public class ConnectCommandsIntegrationTest
+public class TextOutputCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = TextOutputCommands.class;
 
   @Autowired
   private Shell shell;
 
   @Test
-  public void connect()
+  public void output()
   {
-    final String command = "connect";
-    final String commandMethod = "connect";
+    final String command = "output";
+    final String commandMethod = "output";
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a server specification"));
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Set output options"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
                              String.class,
                              String.class,
-                             int.class,
-                             String.class,
-                             String.class,
-                             String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
-    assertThat(shell
-      .evaluate(() -> command
-                      + " -server hsqldb -user sa -database schemacrawler"),
-               is(true));
-    assertThat(shell.evaluate(() -> "is-connected"), is(true));
+    shell.evaluate(() -> command + " -fmt text");
+    // TODO: Verify that the command succeeded
+  }
 
-    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  @Before
+  public void setup()
+  {
+    connect();
+    loadCatalog();
   }
 
   @Test
-  public void connectUrl()
+  public void show()
   {
-    final String command = "connect-url";
-    final String commandMethod = "connectUrl";
+    final String command = "show";
+    final String commandMethod = "show";
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("Connect to a database, using a connection URL"));
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Show output"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
-                             String.class,
-                             String.class,
-                             String.class)));
+                             boolean.class,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
-    assertThat(shell
-      .evaluate(() -> command
-                      + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
-               is(true));
-    assertThat(shell.evaluate(() -> "is-connected"), is(true));
+    shell.evaluate(() -> command + " -portablenames true");
+    // TODO: Verify that the command succeeded
+  }
 
-    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
+  @Test
+  public void sort()
+  {
+    final String command = "sort";
+    final String commandMethod = "sort";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Sort output"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             boolean.class,
+                             boolean.class,
+                             boolean.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    shell.evaluate(() -> command + " -sorttables false");
+    // TODO: Verify that the command succeeded
+  }
+
+  @After
+  public void sweep()
+  {
+    assertThat(shell.evaluate(() -> "sweep"), nullValue());
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  }
+
+  private void connect()
+  {
+    assertThat(shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
+               is(true));
+  }
+
+  private void loadCatalog()
+  {
+    assertThat(shell.evaluate(() -> "load-catalog -infolevel minimum"),
+               is(true));
   }
 
 }

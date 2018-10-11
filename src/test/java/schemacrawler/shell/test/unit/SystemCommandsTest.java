@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.unit;
 
 
 import static org.hamcrest.core.Is.is;
@@ -35,29 +35,33 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
-import org.springframework.shell.Shell;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
-import schemacrawler.shell.SystemCommands;
+import schemacrawler.shell.commands.SystemCommands;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(properties = {
-                               InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
-                               + "=" + false })
-public class SystemCommandsIntegrationTest
+public class SystemCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
-  @Autowired
-  private Shell shell;
+  private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+
+  @Before
+  public void setup()
+  {
+    final ApplicationContext context = new AnnotationConfigApplicationContext(COMMANDS_CLASS_UNDER_TEST);
+    final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
+    registrar.setApplicationContext(context);
+    registrar.register(registry);
+  }
 
   @Test
   public void systemInfo()
@@ -65,14 +69,14 @@ public class SystemCommandsIntegrationTest
     final String command = "system-info";
     final String commandMethod = "systemInfo";
 
-    final MethodTarget commandTarget = lookupCommand(shell, command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
     assertThat(commandTarget.getHelp(), is("System version information"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(shell.evaluate(() -> command), nullValue());
+    assertThat(invoke(commandTarget), nullValue());
   }
 
   @Test
@@ -81,7 +85,7 @@ public class SystemCommandsIntegrationTest
     final String command = "version";
     final String commandMethod = "version";
 
-    final MethodTarget commandTarget = lookupCommand(shell, command);
+    final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
     assertThat(commandTarget.getHelp(),
@@ -89,7 +93,7 @@ public class SystemCommandsIntegrationTest
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(shell.evaluate(() -> command), nullValue());
+    assertThat(invoke(commandTarget), nullValue());
   }
 
 }

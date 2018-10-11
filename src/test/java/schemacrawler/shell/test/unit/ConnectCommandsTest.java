@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.unit;
 
 
 import static org.hamcrest.core.Is.is;
@@ -44,8 +44,9 @@ import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
-import schemacrawler.shell.ConnectCommands;
-import schemacrawler.shell.SchemaCrawlerShellState;
+import schemacrawler.shell.commands.ConnectCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 
 public class ConnectCommandsTest
   extends BaseSchemaCrawlerShellTest

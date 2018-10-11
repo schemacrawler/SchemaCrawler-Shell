@@ -26,47 +26,58 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test;
+package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
-
-import java.sql.SQLException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.shell.ConfigurableCommandRegistry;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.MethodTarget;
-import org.springframework.shell.standard.StandardMethodTargetRegistrar;
+import org.springframework.shell.Shell;
+import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.schemacrawler.SchemaCrawlerException;
-import schemacrawler.shell.ConnectCommands;
-import schemacrawler.shell.LoadCommands;
-import schemacrawler.shell.SchemaCrawlerShellState;
+import schemacrawler.shell.commands.LoadCommands;
+import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.tools.options.InfoLevel;
 
-public class LoadCommandsTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(properties = {
+                               InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
+                               + "=" + false })
+public class LoadCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {
 
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
 
-  private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-  private SchemaCrawlerShellState state;
+  @Autowired
+  private Shell shell;
+
+  @Before
+  public void connect()
+  {
+    assertThat(shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
+               is(true));
+  }
 
   @Test
   public void loadCatalog()
-    throws SQLException
   {
     final String command = "load-catalog";
     final String commandMethod = "loadCatalog";
 
-    final MethodTarget commandTarget = lookupCommand(registry, command);
+    final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("2. Catalog Load Commands"));
     assertThat(commandTarget.getHelp(), is("Load a catalog"));
@@ -75,36 +86,18 @@ public class LoadCommandsTest
                              commandMethod,
                              InfoLevel.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget, InfoLevel.standard), is(true));
 
-    assertThat(state.getCatalog(), notNullValue());
-    assertThat(state.getCatalog().getTables().size(), is(19));
-  }
-
-  @Before
-  public void setup()
-    throws SchemaCrawlerException, SQLException
-  {
-    final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.registerBean("state", SchemaCrawlerShellState.class);
-    context.register(COMMANDS_CLASS_UNDER_TEST);
-    context.refresh();
-    state = (SchemaCrawlerShellState) context.getBean("state");
-
-    final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
-    registrar.setApplicationContext(context);
-    registrar.register(registry);
-
-    // Create a connection
-    final ConnectCommands connectCommands = new ConnectCommands(state);
-    connectCommands
-      .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
+    assertThat(shell.evaluate(() -> "is-loaded"), is(false));
+    assertThat(shell.evaluate(() -> command + " -infolevel standard"),
+               is(true));
+    assertThat(shell.evaluate(() -> "is-loaded"), is(true));
   }
 
   @After
   public void sweep()
   {
-    state.sweep();
+    assertThat(shell.evaluate(() -> "sweep"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
   }
 
 }
