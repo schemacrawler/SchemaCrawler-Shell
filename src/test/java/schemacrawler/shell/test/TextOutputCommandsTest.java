@@ -31,11 +31,13 @@ package schemacrawler.shell.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.SQLException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -45,9 +47,13 @@ import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
+import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.ConnectCommands;
+import schemacrawler.shell.LoadCommands;
 import schemacrawler.shell.SchemaCrawlerShellState;
 import schemacrawler.shell.TextOutputCommands;
+import schemacrawler.tools.options.InfoLevel;
+import schemacrawler.tools.options.OutputOptions;
 import schemacrawler.tools.text.base.CommonTextOptions;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptions;
@@ -61,6 +67,50 @@ public class TextOutputCommandsTest
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   private SchemaCrawlerShellState state;
+
+  @Test
+  public void output()
+    throws SQLException
+  {
+    final String command = "output";
+    final String commandMethod = "output";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Set output options"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(preOptions.getTitle(), is(""));
+
+    final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
+               startsWith("schemacrawler"));
+    assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
+
+    invoke(commandTarget, "title", "outputfile.txt", "html");
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(postOptions.getTitle(), is("title"));
+
+    final OutputOptions postOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(postOutputOptions.getOutputFile().toFile().getName(),
+               is("outputfile.txt"));
+    assertThat(postOutputOptions.getOutputFormatValue(), is("html"));
+  }
 
   @Before
   public void setup()
@@ -80,6 +130,10 @@ public class TextOutputCommandsTest
     final ConnectCommands connectCommands = new ConnectCommands(state);
     connectCommands
       .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
+
+    // Load schema
+    final LoadCommands loadCommands = new LoadCommands(state);
+    loadCommands.loadCatalog(InfoLevel.minimum);
   }
 
   @Test
@@ -159,6 +213,12 @@ public class TextOutputCommandsTest
     assertThat(postOptions.isAlphabeticalSortForTables(), is(false));
     assertThat(postOptions.isAlphabeticalSortForTableColumns(), is(true));
     assertThat(postOptions.isAlphabeticalSortForRoutineColumns(), is(true));
+  }
+
+  @After
+  public void sweep()
+  {
+    state.sweep();
   }
 
 }

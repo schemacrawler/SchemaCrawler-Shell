@@ -37,6 +37,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.SQLException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -61,6 +62,12 @@ public class FilterCommandsTest
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   private SchemaCrawlerShellState state;
+
+  @After
+  public void disconnect()
+  {
+    state.disconnect();
+  }
 
   @Test
   public void filter()
@@ -244,16 +251,16 @@ public class FilterCommandsTest
       .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
   }
 
-  private String getInclusionPattern(final InclusionRule inclusionRule)
-  {
-    return ((InclusionRuleWithRegularExpression) inclusionRule)
-      .getInclusionPattern().pattern();
-  }
-
   private String getExclusionPattern(final InclusionRule inclusionRule)
   {
     return ((InclusionRuleWithRegularExpression) inclusionRule)
       .getExclusionPattern().pattern();
+  }
+
+  private String getInclusionPattern(final InclusionRule inclusionRule)
+  {
+    return ((InclusionRuleWithRegularExpression) inclusionRule)
+      .getInclusionPattern().pattern();
   }
 
 }

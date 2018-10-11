@@ -70,13 +70,6 @@ public class LoadCommandsIntegrationTest
                is(true));
   }
 
-  @After
-  public void disconnect()
-  {
-    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
-  }
-
   @Test
   public void loadCatalog()
   {
@@ -97,6 +90,13 @@ public class LoadCommandsIntegrationTest
     assertThat(shell.evaluate(() -> command + " -infolevel standard"),
                is(true));
     assertThat(shell.evaluate(() -> "is-loaded"), is(true));
+  }
+
+  @After
+  public void sweep()
+  {
+    assertThat(shell.evaluate(() -> "sweep"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
   }
 
 }

@@ -130,7 +130,7 @@ public class ConnectCommands
     }
   }
 
-  @ShellMethod(value = "Disconnect from a database, and clear loaded catalog", prefix = "-")
+  @ShellMethod(value = "Disconnect from a database", prefix = "-")
   public void disconnect()
   {
     state.disconnect();
@@ -164,6 +164,12 @@ public class ConnectCommands
     {
       System.out.println(server);
     }
+  }
+
+  @ShellMethod(value = "Disconnect from a database, and clear loaded catalog", prefix = "-")
+  public void sweep()
+  {
+    state.sweep();
   }
 
   private void createDataSource(final String connectionUrl,

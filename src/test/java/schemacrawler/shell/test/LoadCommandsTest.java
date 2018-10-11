@@ -36,6 +36,7 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.SQLException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -98,6 +99,12 @@ public class LoadCommandsTest
     final ConnectCommands connectCommands = new ConnectCommands(state);
     connectCommands
       .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
+  }
+
+  @After
+  public void sweep()
+  {
+    state.sweep();
   }
 
 }

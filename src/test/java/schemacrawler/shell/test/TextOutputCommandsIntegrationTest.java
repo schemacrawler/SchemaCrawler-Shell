@@ -61,19 +61,33 @@ public class TextOutputCommandsIntegrationTest
   @Autowired
   private Shell shell;
 
-  @Before
-  public void connect()
+  @Test
+  public void output()
   {
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
+    final String command = "output";
+    final String commandMethod = "output";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getHelp(), is("Set output options"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
+                             commandMethod,
+                             String.class,
+                             String.class,
+                             String.class)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    shell.evaluate(() -> command + " -fmt text");
+    // TODO: Verify that the command succeeded
   }
 
-  @After
-  public void disconnect()
+  @Before
+  public void setup()
   {
-    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
+    connect();
+    loadCatalog();
   }
 
   @Test
@@ -119,6 +133,26 @@ public class TextOutputCommandsIntegrationTest
 
     shell.evaluate(() -> command + " -sorttables false");
     // TODO: Verify that the command succeeded
+  }
+
+  @After
+  public void sweep()
+  {
+    assertThat(shell.evaluate(() -> "sweep"), nullValue());
+    assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  }
+
+  private void connect()
+  {
+    assertThat(shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
+               is(true));
+  }
+
+  private void loadCatalog()
+  {
+    assertThat(shell.evaluate(() -> "load-catalog -infolevel minimum"),
+               is(true));
   }
 
 }

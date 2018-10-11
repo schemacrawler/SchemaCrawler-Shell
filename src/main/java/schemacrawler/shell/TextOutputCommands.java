@@ -29,6 +29,10 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell;
 
 
+import static sf.util.Utility.isBlank;
+
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -38,6 +42,8 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.Config;
+import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
+import schemacrawler.tools.options.OutputOptionsBuilder;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
@@ -54,11 +60,38 @@ public class TextOutputCommands
   private SchemaCrawlerShellState state;
 
   @ShellMethodAvailability
-  public Availability isConnected()
+  public Availability isLoaded()
   {
-    final boolean isConnected = new ConnectCommands(state).isConnected();
+    final boolean isConnected = new LoadCommands(state).isLoaded();
     return isConnected? Availability.available(): Availability
-      .unavailable("there is no database connection");
+      .unavailable("there is no schema metadata loaded");
+  }
+
+  @ShellMethod(value = "Set output options", prefix = "-")
+  public void output(@ShellOption(defaultValue = "", help = "Shows the title text on the output") final String title,
+                     @ShellOption(value = "-o", defaultValue = "", help = "Whether to sort table columns") final String outputfile,
+                     @ShellOption(value = "-fmt", defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
+  {
+    try
+    {
+      final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
+        .getSchemaCrawlerOptionsBuilder();
+
+      schemaCrawlerOptionsBuilder.title(title);
+
+      final OutputOptionsBuilder outputOptionsBuilder = state
+        .getOutputOptionsBuilder();
+
+      if (!isBlank(outputfile))
+      {
+        outputOptionsBuilder.withOutputFile(Paths.get(outputfile));
+      }
+      outputOptionsBuilder.withOutputFormatValue(outputformat);
+    }
+    catch (final Exception e)
+    {
+      throw new RuntimeException("Cannot set output options", e);
+    }
   }
 
   @ShellMethod(value = "Show output", prefix = "-")

@@ -37,6 +37,7 @@ import schemacrawler.schema.Catalog;
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
+import schemacrawler.tools.options.OutputOptionsBuilder;
 
 @Component("state")
 public class SchemaCrawlerShellState
@@ -47,16 +48,7 @@ public class SchemaCrawlerShellState
   private Config additionalConfiguration;
   private SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder;
   private SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder;
-
-  public void clear()
-  {
-    catalog = null;
-    additionalConfiguration = null;
-    schemaCrawlerOptionsBuilder = null;
-    schemaRetrievalOptionsBuilder = null;
-
-    disconnect();
-  }
+  private OutputOptionsBuilder outputOptionsBuilder;
 
   public void disconnect()
   {
@@ -89,6 +81,11 @@ public class SchemaCrawlerShellState
     return dataSource;
   }
 
+  public OutputOptionsBuilder getOutputOptionsBuilder()
+  {
+    return outputOptionsBuilder;
+  }
+
   public SchemaCrawlerOptionsBuilder getSchemaCrawlerOptionsBuilder()
   {
     return schemaCrawlerOptionsBuilder;
@@ -114,6 +111,11 @@ public class SchemaCrawlerShellState
     this.dataSource = dataSource;
   }
 
+  public void setOutputOptionsBuilder(final OutputOptionsBuilder outputOptionsBuilder)
+  {
+    this.outputOptionsBuilder = outputOptionsBuilder;
+  }
+
   public void setSchemaCrawlerOptionsBuilder(final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder)
   {
     this.schemaCrawlerOptionsBuilder = schemaCrawlerOptionsBuilder;
@@ -122,6 +124,17 @@ public class SchemaCrawlerShellState
   public void setSchemaRetrievalOptionsBuilder(final SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder)
   {
     this.schemaRetrievalOptionsBuilder = schemaRetrievalOptionsBuilder;
+  }
+
+  public void sweep()
+  {
+    catalog = null;
+    additionalConfiguration = null;
+    schemaCrawlerOptionsBuilder = null;
+    schemaRetrievalOptionsBuilder = null;
+    outputOptionsBuilder = null;
+
+    disconnect();
   }
 
 }

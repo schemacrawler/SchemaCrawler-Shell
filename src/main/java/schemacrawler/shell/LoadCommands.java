@@ -51,6 +51,7 @@ import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.tools.catalogloader.CatalogLoader;
 import schemacrawler.tools.catalogloader.CatalogLoaderRegistry;
 import schemacrawler.tools.options.InfoLevel;
+import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 
@@ -90,6 +91,8 @@ public class LoadCommands
   {
     try (final Connection connection = state.getDataSource().getConnection();)
     {
+      loadOutputOptionsBuilder();
+
       final Config additionalConfiguration = state.getAdditionalConfiguration();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
         .getSchemaRetrievalOptionsBuilder().toOptions();
@@ -122,6 +125,15 @@ public class LoadCommands
     }
 
     return isLoaded();
+  }
+
+  private void loadOutputOptionsBuilder()
+  {
+    final Config config = state.getAdditionalConfiguration();
+    final OutputOptionsBuilder outputOptionsBuilder = OutputOptionsBuilder
+      .builder();
+    outputOptionsBuilder.fromConfig(config);
+    state.setOutputOptionsBuilder(outputOptionsBuilder);
   }
 
 }

@@ -48,7 +48,6 @@ import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;
 import schemacrawler.tools.options.OutputOptions;
-import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
@@ -88,8 +87,8 @@ public class ExecuteCommands
         .getSchemaCrawlerOptionsBuilder().toOptions();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
         .getSchemaRetrievalOptionsBuilder().toOptions();
-      final OutputOptions outputOptions = OutputOptionsBuilder
-        .newOutputOptions();
+      final OutputOptions outputOptions = state.getOutputOptionsBuilder()
+        .toOptions();
 
       final SchemaCrawlerExecutable executable = new SchemaCrawlerExecutable(command);
       // Configure
