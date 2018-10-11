@@ -30,6 +30,7 @@ package schemacrawler.shell.test;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
@@ -43,6 +44,7 @@ import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 
+import schemacrawler.schema.RoutineType;
 import schemacrawler.schemacrawler.InclusionRule;
 import schemacrawler.schemacrawler.InclusionRuleWithRegularExpression;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
@@ -137,12 +139,12 @@ public class FilterCommandsTest
     assertThat(postOptions.isGrepInvertMatch(), is(true));
     assertThat(postOptions.isGrepOnlyMatching(), is(true));
 
-    assertThat(getPattern(postOptions.getGrepColumnInclusionRule().get()),
-               is("t.*t"));
-    assertThat(getPattern(postOptions.getGrepRoutineColumnInclusionRule()
+    assertThat(getInclusionPattern(postOptions.getGrepColumnInclusionRule()
       .get()), is("t.*t"));
-    assertThat(getPattern(postOptions.getGrepDefinitionInclusionRule().get()),
-               is("t.*t"));
+    assertThat(getInclusionPattern(postOptions
+      .getGrepRoutineColumnInclusionRule().get()), is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getGrepDefinitionInclusionRule()
+      .get()), is("t.*t"));
   }
 
   @Test
@@ -173,18 +175,29 @@ public class FilterCommandsTest
     // Check state before invoking command
     final SchemaCrawlerOptions preOptions = state
       .getSchemaCrawlerOptionsBuilder().toOptions();
-    assertThat(getPattern(preOptions.getSchemaInclusionRule()), is(".*"));
-    assertThat(getPattern(preOptions.getTableInclusionRule()), is(".*"));
-    assertThat(getPattern(preOptions.getRoutineInclusionRule()), is(""));
-    assertThat(getPattern(preOptions.getSynonymInclusionRule()), is(""));
-    assertThat(getPattern(preOptions.getSequenceInclusionRule()), is(""));
+    assertThat(getInclusionPattern(preOptions.getSchemaInclusionRule()),
+               is(".*"));
+    assertThat(preOptions.getTableTypes(), hasItem("VIEW"));
+    assertThat(getInclusionPattern(preOptions.getTableInclusionRule()),
+               is(".*"));
+    assertThat(getExclusionPattern(preOptions.getColumnInclusionRule()),
+               is(""));
+    assertThat(preOptions.getRoutineTypes(), hasItem(RoutineType.function));
+    assertThat(getInclusionPattern(preOptions.getRoutineInclusionRule()),
+               is(""));
+    assertThat(getExclusionPattern(preOptions.getRoutineColumnInclusionRule()),
+               is(""));
+    assertThat(getInclusionPattern(preOptions.getSynonymInclusionRule()),
+               is(""));
+    assertThat(getInclusionPattern(preOptions.getSequenceInclusionRule()),
+               is(""));
 
     invoke(commandTarget,
            "t.*t",
+           "XX",
            "t.*t",
            "t.*t",
-           "t.*t",
-           "t.*t",
+           "YY",
            "t.*t",
            "t.*t",
            "t.*t",
@@ -193,11 +206,22 @@ public class FilterCommandsTest
     // Check state after invoking command
     final SchemaCrawlerOptions postOptions = state
       .getSchemaCrawlerOptionsBuilder().toOptions();
-    assertThat(getPattern(postOptions.getSchemaInclusionRule()), is("t.*t"));
-    assertThat(getPattern(postOptions.getTableInclusionRule()), is("t.*t"));
-    assertThat(getPattern(postOptions.getRoutineInclusionRule()), is("t.*t"));
-    assertThat(getPattern(postOptions.getSynonymInclusionRule()), is("t.*t"));
-    assertThat(getPattern(postOptions.getSequenceInclusionRule()), is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getSchemaInclusionRule()),
+               is("t.*t"));
+    assertThat(postOptions.getTableTypes(), hasItem("XX"));
+    assertThat(getInclusionPattern(postOptions.getTableInclusionRule()),
+               is("t.*t"));
+    assertThat(getExclusionPattern(postOptions.getColumnInclusionRule()),
+               is("t.*t"));
+    assertThat(postOptions.getRoutineTypes(), hasItem(RoutineType.unknown));
+    assertThat(getInclusionPattern(postOptions.getRoutineInclusionRule()),
+               is("t.*t"));
+    assertThat(getExclusionPattern(postOptions.getRoutineColumnInclusionRule()),
+               is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getSynonymInclusionRule()),
+               is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getSequenceInclusionRule()),
+               is("t.*t"));
   }
 
   @Before
@@ -220,10 +244,16 @@ public class FilterCommandsTest
       .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
   }
 
-  private String getPattern(final InclusionRule inclusionRule)
+  private String getInclusionPattern(final InclusionRule inclusionRule)
   {
     return ((InclusionRuleWithRegularExpression) inclusionRule)
       .getInclusionPattern().pattern();
+  }
+
+  private String getExclusionPattern(final InclusionRule inclusionRule)
+  {
+    return ((InclusionRuleWithRegularExpression) inclusionRule)
+      .getExclusionPattern().pattern();
   }
 
 }
