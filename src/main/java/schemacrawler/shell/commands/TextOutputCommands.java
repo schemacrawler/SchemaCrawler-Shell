@@ -50,7 +50,7 @@ import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("3. Text Output Commands")
+@ShellCommandGroup("4. Text Output Commands")
 public class TextOutputCommands
 {
 
@@ -69,8 +69,8 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Set output options", prefix = "-")
-  public void output(@ShellOption(defaultValue = "", help = "Shows the title text on the output") final String title,
-                     @ShellOption(value = "-o", defaultValue = "", help = "Whether to sort table columns") final String outputfile,
+  public void output(@ShellOption(defaultValue = "", help = "Title text on output") final String title,
+                     @ShellOption(value = "-o", defaultValue = "", help = "Output file name") final String outputfile,
                      @ShellOption(value = "-fmt", defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
   {
     try
@@ -96,10 +96,10 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Show output", prefix = "-")
-  public void show(@ShellOption(help = "Whether to sort tables") final boolean noinfo,
-                   @ShellOption(help = "Whether to sort table columns") final boolean noremarks,
-                   @ShellOption(help = "Whether to routine parameters") final boolean weakassociations,
-                   @ShellOption(help = "Whether to routine parameters") final boolean portablenames)
+  public void show(@ShellOption(help = "Whether to show database information") final boolean noinfo,
+                   @ShellOption(help = "Whether to sort remarks") final boolean noremarks,
+                   @ShellOption(help = "Whether to weak associations") final boolean weakassociations,
+                   @ShellOption(help = "Whether to use portable names") final boolean portablenames)
   {
     try
     {
@@ -115,7 +115,7 @@ public class TextOutputCommands
     }
     catch (final Exception e)
     {
-      throw new RuntimeException("Cannot set sort commands", e);
+      throw new RuntimeException("Cannot set show output options", e);
     }
   }
 
@@ -138,7 +138,7 @@ public class TextOutputCommands
     }
     catch (final Exception e)
     {
-      throw new RuntimeException("Cannot set sort commands", e);
+      throw new RuntimeException("Cannot set sort options", e);
     }
   }
 

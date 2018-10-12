@@ -85,7 +85,7 @@ public class FilterCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getGroup(), is("2. Filter Commands"));
     assertThat(commandTarget.getHelp(), is("Filter database object metadata"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
@@ -107,7 +107,7 @@ public class FilterCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getGroup(), is("2. Filter Commands"));
     assertThat(commandTarget.getHelp(), is("Grep database object metadata"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
@@ -131,7 +131,7 @@ public class FilterCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Filter Commands"));
+    assertThat(commandTarget.getGroup(), is("2. Filter Commands"));
     assertThat(commandTarget.getHelp(), is("Limit database object metadata"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,

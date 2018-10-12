@@ -70,7 +70,7 @@ public class TextOutputCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getGroup(), is("4. Text Output Commands"));
     assertThat(commandTarget.getHelp(), is("Set output options"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
@@ -99,7 +99,7 @@ public class TextOutputCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getGroup(), is("4. Text Output Commands"));
     assertThat(commandTarget.getHelp(), is("Show output"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
@@ -122,7 +122,7 @@ public class TextOutputCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Text Output Commands"));
+    assertThat(commandTarget.getGroup(), is("4. Text Output Commands"));
     assertThat(commandTarget.getHelp(), is("Sort output"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,

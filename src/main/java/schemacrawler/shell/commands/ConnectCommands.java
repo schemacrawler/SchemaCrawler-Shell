@@ -84,6 +84,7 @@ public class ConnectCommands
   {
     try
     {
+      sweep();
       lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
       loadConfig();
       loadSchemaCrawlerOptionsBuilder();
@@ -117,6 +118,7 @@ public class ConnectCommands
   {
     try
     {
+      sweep();
       lookupDatabaseConnectorFromUrl(connectionUrl);
       loadConfig();
       loadSchemaCrawlerOptionsBuilder();

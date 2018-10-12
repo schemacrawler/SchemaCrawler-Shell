@@ -79,7 +79,7 @@ public class LoadCommandsIntegrationTest
 
     final MethodTarget commandTarget = lookupCommand(shell, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("2. Catalog Load Commands"));
+    assertThat(commandTarget.getGroup(), is("3. Catalog Load Commands"));
     assertThat(commandTarget.getHelp(), is("Load a catalog"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,

@@ -44,7 +44,7 @@ import schemacrawler.shell.state.SchemaCrawlerShellState;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("3. Filter Commands")
+@ShellCommandGroup("2. Filter Commands")
 public class FilterCommands
 {
 

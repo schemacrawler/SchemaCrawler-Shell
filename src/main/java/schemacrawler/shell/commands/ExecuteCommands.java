@@ -52,7 +52,7 @@ import schemacrawler.tools.options.OutputOptions;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("3. SchemaCrawler Commands")
+@ShellCommandGroup("5. SchemaCrawler Commands")
 public class ExecuteCommands
 {
 

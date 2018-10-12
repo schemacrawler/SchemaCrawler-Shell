@@ -57,7 +57,7 @@ import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 
 @ShellComponent
-@ShellCommandGroup("2. Catalog Load Commands")
+@ShellCommandGroup("3. Catalog Load Commands")
 public class LoadCommands
 {
 
@@ -88,7 +88,7 @@ public class LoadCommands
   }
 
   @ShellMethod(value = "Load a catalog", prefix = "-")
-  public boolean loadCatalog(@ShellOption(value = "-infolevel", help = "Determines the amount of database metadata retrieved") @NotNull final InfoLevel infoLevel)
+  public boolean loadCatalog(@ShellOption(value = "-infolevel", help = "Determine the amount of database metadata retrieved") @NotNull final InfoLevel infoLevel)
   {
     try (final Connection connection = state.getDataSource().getConnection();)
     {
@@ -118,14 +118,13 @@ public class LoadCommands
 
       state.setCatalog(catalog);
       LOGGER.log(Level.INFO, "Loaded catalog");
+
+      return isLoaded();
     }
     catch (final Exception e)
     {
-      LOGGER.log(Level.WARNING, e.getMessage(), e);
-      state.setCatalog(null);
+      throw new RuntimeException("Cannot load catalog", e);
     }
-
-    return isLoaded();
   }
 
   private void loadOutputOptionsBuilder()
