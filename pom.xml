@@ -155,10 +155,6 @@
               </execution>
             </executions>
           </plugin>
-          <!-- NOTE: Uncomment when looking for required dependencies -->
-          <!-- <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
-            <executions> <execution> <goals> <goal>repackage</goal> </goals> </execution> 
-            </executions> </plugin> -->
         </plugins>
         <pluginManagement>
           <plugins>
@@ -331,6 +327,10 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+
+      <!-- NOTE: Use spring-boot-maven-plugin to generate an uber-jar with 
+        required dependencies -->
+
     </plugins>
   </build>
 
