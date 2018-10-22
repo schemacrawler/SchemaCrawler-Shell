@@ -48,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.shell.commands.LoadCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 import schemacrawler.tools.options.InfoLevel;
@@ -65,6 +66,8 @@ public class LoadCommandsIntegrationTest
 
   @Autowired
   private Shell shell;
+  @Autowired
+  private SchemaCrawlerShellState state;
 
   @Before
   public void connect()
@@ -90,9 +93,14 @@ public class LoadCommandsIntegrationTest
                              InfoLevel.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
+    assertThat(state.getCatalog(), nullValue());
     assertThat(shell.evaluate(() -> "is-loaded"), is(false));
+
     assertThat(shell.evaluate(() -> command + " -infolevel standard"),
                is(true));
+
+    assertThat(state.getCatalog(), notNullValue());
+    assertThat(state.getCatalog().getTables().size(), is(19));
     assertThat(shell.evaluate(() -> "is-loaded"), is(true));
   }
 
