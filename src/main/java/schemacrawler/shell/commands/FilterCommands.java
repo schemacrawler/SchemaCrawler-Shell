@@ -61,6 +61,7 @@ public class FilterCommands
   {
     try
     {
+      System.err.println(state);
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 

@@ -30,8 +30,9 @@ package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -47,7 +48,9 @@ import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.commands.FilterCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 
@@ -63,7 +66,15 @@ public class FilterCommandsIntegrationTest
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = FilterCommands.class;
 
   @Autowired
+  private SchemaCrawlerShellState state;
+  @Autowired
   private Shell shell;
+
+  @After
+  public void disconnect()
+  {
+    state.disconnect();
+  }
 
   @Before
   public void connect()
@@ -71,13 +82,6 @@ public class FilterCommandsIntegrationTest
     assertThat(shell
       .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
                is(true));
-  }
-
-  @After
-  public void disconnect()
-  {
-    assertThat(shell.evaluate(() -> "disconnect"), nullValue());
-    assertThat(shell.evaluate(() -> "is-connected"), is(false));
   }
 
   @Test
@@ -98,8 +102,23 @@ public class FilterCommandsIntegrationTest
                              int.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    shell.evaluate(() -> command + " -children 1");
-    // TODO: Verify that the command succeeded
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(preOptions.isNoEmptyTables(), is(false));
+    assertThat(preOptions.getChildTableFilterDepth(), is(0));
+    assertThat(preOptions.getParentTableFilterDepth(), is(0));
+
+    assertThat(shell
+      .evaluate(() -> command + " -noemptytables -parents 1 -children 1"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(postOptions.isNoEmptyTables(), is(true));
+    assertThat(postOptions.getChildTableFilterDepth(), is(1));
+    assertThat(postOptions.getParentTableFilterDepth(), is(1));
   }
 
   @Test
