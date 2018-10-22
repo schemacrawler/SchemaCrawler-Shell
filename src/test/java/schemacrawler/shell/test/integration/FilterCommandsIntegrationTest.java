@@ -30,6 +30,7 @@ package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -48,6 +49,7 @@ import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schema.RoutineType;
 import schemacrawler.schemacrawler.InclusionRule;
 import schemacrawler.schemacrawler.InclusionRuleWithRegularExpression;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
@@ -198,8 +200,51 @@ public class FilterCommandsIntegrationTest
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(getInclusionPattern(preOptions.getSchemaInclusionRule()),
+               is(".*"));
+    assertThat(preOptions.getTableTypes(), hasItem("VIEW"));
+    assertThat(getInclusionPattern(preOptions.getTableInclusionRule()),
+               is(".*"));
+    assertThat(getExclusionPattern(preOptions.getColumnInclusionRule()),
+               is(""));
+    assertThat(preOptions.getRoutineTypes(), hasItem(RoutineType.function));
+    assertThat(getInclusionPattern(preOptions.getRoutineInclusionRule()),
+               is(""));
+    assertThat(getExclusionPattern(preOptions.getRoutineColumnInclusionRule()),
+               is(""));
+    assertThat(getInclusionPattern(preOptions.getSynonymInclusionRule()),
+               is(""));
+    assertThat(getInclusionPattern(preOptions.getSequenceInclusionRule()),
+               is(""));
+
     shell.evaluate(() -> command + " -schemas .*");
-    // TODO: Verify that the command succeeded
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -schemas t.*t -tabletypes XX -tables t.*t -excludecolumns t.*t -routinetypes YY -routines t.*t -excludeinout t.*t -synonyms t.*t -sequences t.*t"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(getInclusionPattern(postOptions.getSchemaInclusionRule()),
+               is("t.*t"));
+    assertThat(postOptions.getTableTypes(), hasItem("XX"));
+    assertThat(getInclusionPattern(postOptions.getTableInclusionRule()),
+               is("t.*t"));
+    assertThat(getExclusionPattern(postOptions.getColumnInclusionRule()),
+               is("t.*t"));
+    assertThat(postOptions.getRoutineTypes(), hasItem(RoutineType.unknown));
+    assertThat(getInclusionPattern(postOptions.getRoutineInclusionRule()),
+               is("t.*t"));
+    assertThat(getExclusionPattern(postOptions.getRoutineColumnInclusionRule()),
+               is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getSynonymInclusionRule()),
+               is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getSequenceInclusionRule()),
+               is("t.*t"));
   }
 
   private String getExclusionPattern(final InclusionRule inclusionRule)
