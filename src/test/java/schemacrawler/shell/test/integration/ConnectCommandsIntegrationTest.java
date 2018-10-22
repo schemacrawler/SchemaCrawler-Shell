@@ -35,6 +35,9 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.shell.commands.ConnectCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 
@@ -61,10 +65,13 @@ public class ConnectCommandsIntegrationTest
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
 
   @Autowired
+  private SchemaCrawlerShellState state;
+  @Autowired
   private Shell shell;
 
   @Test
   public void connect()
+    throws Exception
   {
     final String command = "connect";
     final String commandMethod = "connect";
@@ -92,6 +99,7 @@ public class ConnectCommandsIntegrationTest
                       + " -server hsqldb -user sa -database schemacrawler"),
                is(true));
     assertThat(shell.evaluate(() -> "is-connected"), is(true));
+    assertConnection();
 
     assertThat(shell.evaluate(() -> "disconnect"), nullValue());
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
@@ -99,6 +107,7 @@ public class ConnectCommandsIntegrationTest
 
   @Test
   public void connectUrl()
+    throws Exception
   {
     final String command = "connect-url";
     final String commandMethod = "connectUrl";
@@ -122,9 +131,21 @@ public class ConnectCommandsIntegrationTest
                       + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
                is(true));
     assertThat(shell.evaluate(() -> "is-connected"), is(true));
+    assertConnection();
 
     assertThat(shell.evaluate(() -> "disconnect"), nullValue());
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  }
+
+  private void assertConnection()
+    throws SQLException
+  {
+    assertThat(state.getDataSource(), notNullValue());
+    try (final Connection connection = state.getDataSource().getConnection();)
+    {
+      assertThat(connection, notNullValue());
+      assertThat(connection.getCatalog(), is("PUBLIC"));
+    }
   }
 
 }

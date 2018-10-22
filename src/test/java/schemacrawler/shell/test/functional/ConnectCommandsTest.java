@@ -102,12 +102,7 @@ public class ConnectCommandsTest
                       ""),
                is(true));
 
-    assertThat(state.getDataSource(), notNullValue());
-    try (final Connection connection = state.getDataSource().getConnection();)
-    {
-      assertThat(connection, notNullValue());
-      assertThat(connection.getCatalog(), is("PUBLIC"));
-    }
+    assertConnection();
   }
 
   @Test
@@ -135,12 +130,7 @@ public class ConnectCommandsTest
                       ""),
                is(true));
 
-    assertThat(state.getDataSource(), notNullValue());
-    try (final Connection connection = state.getDataSource().getConnection();)
-    {
-      assertThat(connection, notNullValue());
-      assertThat(connection.getCatalog(), is("PUBLIC"));
-    }
+    assertConnection();
   }
 
   @Before
@@ -149,6 +139,17 @@ public class ConnectCommandsTest
     final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);
+  }
+
+  private void assertConnection()
+    throws SQLException
+  {
+    assertThat(state.getDataSource(), notNullValue());
+    try (final Connection connection = state.getDataSource().getConnection();)
+    {
+      assertThat(connection, notNullValue());
+      assertThat(connection.getCatalog(), is("PUBLIC"));
+    }
   }
 
 }
