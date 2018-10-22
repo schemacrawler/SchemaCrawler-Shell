@@ -48,6 +48,8 @@ import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schemacrawler.InclusionRule;
+import schemacrawler.schemacrawler.InclusionRuleWithRegularExpression;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.commands.FilterCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
@@ -141,8 +143,35 @@ public class FilterCommandsIntegrationTest
                              boolean.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    shell.evaluate(() -> command + " -grepcolumns test");
-    // TODO: Verify that the command succeeded
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(preOptions.isGrepColumns(), is(false));
+    assertThat(preOptions.isGrepRoutineColumns(), is(false));
+    assertThat(preOptions.isGrepDefinitions(), is(false));
+    assertThat(preOptions.isGrepInvertMatch(), is(false));
+    assertThat(preOptions.isGrepOnlyMatching(), is(false));
+
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -grepcolumns t.*t -grepinout t.*t -grepdef t.*t -invert-match -only-matching"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(postOptions.isGrepColumns(), is(true));
+    assertThat(postOptions.isGrepRoutineColumns(), is(true));
+    assertThat(postOptions.isGrepDefinitions(), is(true));
+    assertThat(postOptions.isGrepInvertMatch(), is(true));
+    assertThat(postOptions.isGrepOnlyMatching(), is(true));
+
+    assertThat(getInclusionPattern(postOptions.getGrepColumnInclusionRule()
+      .get()), is("t.*t"));
+    assertThat(getInclusionPattern(postOptions
+      .getGrepRoutineColumnInclusionRule().get()), is("t.*t"));
+    assertThat(getInclusionPattern(postOptions.getGrepDefinitionInclusionRule()
+      .get()), is("t.*t"));
   }
 
   @Test
@@ -171,6 +200,18 @@ public class FilterCommandsIntegrationTest
 
     shell.evaluate(() -> command + " -schemas .*");
     // TODO: Verify that the command succeeded
+  }
+
+  private String getExclusionPattern(final InclusionRule inclusionRule)
+  {
+    return ((InclusionRuleWithRegularExpression) inclusionRule)
+      .getExclusionPattern().pattern();
+  }
+
+  private String getInclusionPattern(final InclusionRule inclusionRule)
+  {
+    return ((InclusionRuleWithRegularExpression) inclusionRule)
+      .getInclusionPattern().pattern();
   }
 
 }
