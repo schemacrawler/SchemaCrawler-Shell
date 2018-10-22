@@ -42,15 +42,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.Shell;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.shell.commands.SystemCommands;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
+import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
                                InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED
                                + "=" + false })
+@ContextConfiguration(classes = TestSchemaCrawlerShellState.class)
 public class SystemCommandsIntegrationTest
   extends BaseSchemaCrawlerShellTest
 {

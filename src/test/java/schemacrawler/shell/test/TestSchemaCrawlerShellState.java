@@ -29,30 +29,19 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.test;
 
 
-import static org.springframework.util.ReflectionUtils.invokeMethod;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 
-import javax.validation.constraints.NotNull;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 
-import org.springframework.shell.CommandRegistry;
-import org.springframework.shell.MethodTarget;
-
-import schemacrawler.test.utility.BaseDatabaseTest;
-
-public abstract class BaseSchemaCrawlerShellTest
-  extends BaseDatabaseTest
+@TestConfiguration
+public class TestSchemaCrawlerShellState
 {
 
-  protected <T> T invoke(final MethodTarget methodTarget, final Object... args)
+  @Bean("state")
+  public SchemaCrawlerShellState schemaCrawlerShellState()
   {
-    return (T) invokeMethod(methodTarget.getMethod(),
-                            methodTarget.getBean(),
-                            args);
-  }
-
-  protected MethodTarget lookupCommand(@NotNull final CommandRegistry registry,
-                                       @NotNull final String command)
-  {
-    return registry.listCommands().get(command);
+    return new SchemaCrawlerShellState();
   }
 
 }

@@ -37,15 +37,23 @@ import static org.springframework.util.ReflectionUtils.findMethod;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.shell.commands.SystemCommands;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
+import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+                                  TestSchemaCrawlerShellState.class,
+                                  SystemCommands.class })
 public class SystemCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
@@ -53,11 +61,12 @@ public class SystemCommandsTest
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+  @Autowired
+  private ApplicationContext context;
 
   @Before
   public void setup()
   {
-    final ApplicationContext context = new AnnotationConfigApplicationContext(COMMANDS_CLASS_UNDER_TEST);
     final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);

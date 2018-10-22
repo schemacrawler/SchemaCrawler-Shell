@@ -39,18 +39,27 @@ import java.sql.SQLException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.StandardMethodTargetRegistrar;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.shell.commands.ConnectCommands;
 import schemacrawler.shell.commands.LoadCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
+import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 import schemacrawler.tools.options.InfoLevel;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+                                  TestSchemaCrawlerShellState.class,
+                                  LoadCommands.class })
 public class LoadCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
@@ -58,7 +67,10 @@ public class LoadCommandsTest
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+  @Autowired
   private SchemaCrawlerShellState state;
+  @Autowired
+  private ApplicationContext context;
 
   @Test
   public void loadCatalog()
@@ -86,12 +98,6 @@ public class LoadCommandsTest
   public void setup()
     throws SchemaCrawlerException, SQLException
   {
-    final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.registerBean("state", SchemaCrawlerShellState.class);
-    context.register(COMMANDS_CLASS_UNDER_TEST);
-    context.refresh();
-    state = (SchemaCrawlerShellState) context.getBean("state");
-
     final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);
