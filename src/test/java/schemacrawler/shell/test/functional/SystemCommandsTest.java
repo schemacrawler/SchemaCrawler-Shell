@@ -26,17 +26,15 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test.unit;
+package schemacrawler.shell.test.functional;
 
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
-import java.sql.SQLException;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,70 +46,63 @@ import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import schemacrawler.schemacrawler.SchemaCrawlerException;
-import schemacrawler.shell.commands.ConnectCommands;
-import schemacrawler.shell.commands.LoadCommands;
-import schemacrawler.shell.state.SchemaCrawlerShellState;
+import schemacrawler.shell.commands.SystemCommands;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
-import schemacrawler.tools.options.InfoLevel;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
                                   TestSchemaCrawlerShellState.class,
-                                  LoadCommands.class })
-public class LoadCommandsTest
+                                  SystemCommands.class })
+public class SystemCommandsTest
   extends BaseSchemaCrawlerShellTest
 {
 
-  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = LoadCommands.class;
+  private static final Class<?> COMMANDS_CLASS_UNDER_TEST = SystemCommands.class;
 
   private final ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
   @Autowired
-  private SchemaCrawlerShellState state;
-  @Autowired
   private ApplicationContext context;
-
-  @Test
-  public void loadCatalog()
-    throws SQLException
-  {
-    final String command = "load-catalog";
-    final String commandMethod = "loadCatalog";
-
-    final MethodTarget commandTarget = lookupCommand(registry, command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("3. Catalog Load Commands"));
-    assertThat(commandTarget.getHelp(), is("Load a catalog"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST,
-                             commandMethod,
-                             InfoLevel.class)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget, InfoLevel.standard), is(true));
-
-    assertThat(state.getCatalog(), notNullValue());
-    assertThat(state.getCatalog().getTables().size(), is(19));
-  }
 
   @Before
   public void setup()
-    throws SchemaCrawlerException, SQLException
   {
     final StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
     registrar.setApplicationContext(context);
     registrar.register(registry);
-
-    // Create a connection
-    final ConnectCommands connectCommands = new ConnectCommands(state);
-    connectCommands
-      .connectUrl("jdbc:hsqldb:hsql://localhost:9001/schemacrawler", "sa", "");
   }
 
-  @After
-  public void sweep()
+  @Test
+  public void systemInfo()
   {
-    state.sweep();
+    final String command = "system-info";
+    final String commandMethod = "systemInfo";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getHelp(), is("System version information"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(invoke(commandTarget), nullValue());
+  }
+
+  @Test
+  public void version()
+  {
+    final String command = "version";
+    final String commandMethod = "version";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("SchemaCrawler version information"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+    assertThat(invoke(commandTarget), nullValue());
   }
 
 }

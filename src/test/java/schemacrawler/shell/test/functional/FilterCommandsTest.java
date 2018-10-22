@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 ========================================================================
 */
 
-package schemacrawler.shell.test.unit;
+package schemacrawler.shell.test.functional;
 
 
 import static org.hamcrest.core.Is.is;
