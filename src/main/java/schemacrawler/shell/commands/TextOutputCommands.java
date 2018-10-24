@@ -70,8 +70,12 @@ public class TextOutputCommands
 
   @ShellMethod(value = "Set output options", prefix = "-")
   public void output(@ShellOption(defaultValue = "", help = "Title text on output") final String title,
-                     @ShellOption(value = "-o", defaultValue = "", help = "Output file name") final String outputfile,
-                     @ShellOption(value = "-fmt", defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
+                     @ShellOption(value = {
+                                            "-o",
+                                            "-outputfile" }, defaultValue = "", help = "Output file name") final String outputfile,
+                     @ShellOption(value = {
+                                            "-fmt",
+                                            "-outputformat" }, defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
   {
     try
     {

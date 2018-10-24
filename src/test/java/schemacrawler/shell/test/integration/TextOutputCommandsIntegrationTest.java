@@ -30,8 +30,11 @@ package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -47,9 +50,12 @@ import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.commands.TextOutputCommands;
+import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
+import schemacrawler.tools.options.OutputOptions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
@@ -64,6 +70,8 @@ public class TextOutputCommandsIntegrationTest
 
   @Autowired
   private Shell shell;
+  @Autowired
+  private SchemaCrawlerShellState state;
 
   @Test
   public void output()
@@ -83,8 +91,32 @@ public class TextOutputCommandsIntegrationTest
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    shell.evaluate(() -> command + " -fmt text");
-    // TODO: Verify that the command succeeded
+    // Check state before invoking command
+    final SchemaCrawlerOptions preOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(preOptions.getTitle(), is(""));
+
+    final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
+               startsWith("schemacrawler"));
+    assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
+
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -fmt html -title title -outputfile outputfile.txt"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final SchemaCrawlerOptions postOptions = state
+      .getSchemaCrawlerOptionsBuilder().toOptions();
+    assertThat(postOptions.getTitle(), is("title"));
+
+    final OutputOptions postOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(postOutputOptions.getOutputFile().toFile().getName(),
+               is("outputfile.txt"));
+    assertThat(postOutputOptions.getOutputFormatValue(), is("html"));
   }
 
   @Before
