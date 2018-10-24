@@ -50,12 +50,17 @@ import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.commands.TextOutputCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 import schemacrawler.tools.options.OutputOptions;
+import schemacrawler.tools.text.base.CommonTextOptions;
+import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
+import schemacrawler.tools.text.schema.SchemaTextOptions;
+import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
@@ -145,8 +150,28 @@ public class TextOutputCommandsIntegrationTest
                              boolean.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    shell.evaluate(() -> command + " -portablenames true");
-    // TODO: Verify that the command succeeded
+    // Check state before invoking command
+    final Config preConfig = state.getAdditionalConfiguration();
+    final SchemaTextOptions preOptions = SchemaTextOptionsBuilder.builder()
+      .fromConfig(preConfig).toOptions();
+    assertThat(preOptions.isNoInfo(), is(false));
+    assertThat(preOptions.isHideRemarks(), is(false));
+    assertThat(preOptions.isShowWeakAssociations(), is(false));
+    assertThat(preOptions.isHideIndexNames(), is(false));
+
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -portablenames true -noinfo true -noremarks true -weakassociations true"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final Config postConfig = state.getAdditionalConfiguration();
+    final SchemaTextOptions postOptions = SchemaTextOptionsBuilder.builder()
+      .fromConfig(postConfig).toOptions();
+    assertThat(postOptions.isNoInfo(), is(true));
+    assertThat(postOptions.isHideRemarks(), is(true));
+    assertThat(postOptions.isShowWeakAssociations(), is(true));
+    assertThat(postOptions.isHideIndexNames(), is(true));
   }
 
   @Test
@@ -167,8 +192,26 @@ public class TextOutputCommandsIntegrationTest
                              boolean.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    shell.evaluate(() -> command + " -sorttables false");
-    // TODO: Verify that the command succeeded
+    // Check state before invoking command
+    final Config preConfig = state.getAdditionalConfiguration();
+    final CommonTextOptions preOptions = CommonTextOptionsBuilder.builder()
+      .fromConfig(preConfig).toOptions();
+    assertThat(preOptions.isAlphabeticalSortForTables(), is(true));
+    assertThat(preOptions.isAlphabeticalSortForTableColumns(), is(false));
+    assertThat(preOptions.isAlphabeticalSortForRoutineColumns(), is(false));
+
+    assertThat(shell
+      .evaluate(() -> command
+                      + " -sorttables false -sortcolumns true -sortinout true"),
+               not(instanceOf(Throwable.class)));
+
+    // Check state after invoking command
+    final Config postConfig = state.getAdditionalConfiguration();
+    final CommonTextOptions postOptions = CommonTextOptionsBuilder.builder()
+      .fromConfig(postConfig).toOptions();
+    assertThat(postOptions.isAlphabeticalSortForTables(), is(false));
+    assertThat(postOptions.isAlphabeticalSortForTableColumns(), is(true));
+    assertThat(postOptions.isAlphabeticalSortForRoutineColumns(), is(true));
   }
 
   @After

@@ -156,7 +156,7 @@ public class FilterCommandsIntegrationTest
 
     assertThat(shell
       .evaluate(() -> command
-                      + " -grepcolumns t.*t -grepinout t.*t -grepdef t.*t -invert-match -only-matching"),
+                      + " -grepcolumns t.*t -grepinout t.*t -grepdef t.*t -invert-match true -only-matching true"),
                not(instanceOf(Throwable.class)));
 
     // Check state after invoking command

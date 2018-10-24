@@ -79,8 +79,8 @@ public class FilterCommands
   public void grep(@ShellOption(defaultValue = "", help = "grep for tables with column names matching pattern") final String grepcolumns,
                    @ShellOption(defaultValue = "", help = "grep for routines with parameter names matching pattern") final String grepinout,
                    @ShellOption(defaultValue = "", help = "grep for tables definitions containing pattern") final String grepdef,
-                   @ShellOption(value = "-invert-match", defaultValue = "false", help = "Invert the grep match") final boolean invertMatch,
-                   @ShellOption(value = "-only-matching", defaultValue = "false", help = "Show only matching tables, and not foreign keys that reference other non-matching tables") final boolean onlyMatching)
+                   @ShellOption(value = "-invert-match", arity = 1, defaultValue = "false", help = "Invert the grep match") final boolean invertMatch,
+                   @ShellOption(value = "-only-matching", arity = 1, defaultValue = "false", help = "Show only matching tables, and not foreign keys that reference other non-matching tables") final boolean onlyMatching)
   {
     try
     {
