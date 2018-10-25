@@ -103,7 +103,7 @@ public class ExecuteCommands
       executable.execute();
 
       return new AttributedString(String
-        .format("output sent to ", outputOptions.getOutputResource()),
+        .format("output sent to %s", outputOptions.getOutputResource()),
                                   AttributedStyle.DEFAULT
                                     .foreground(AttributedStyle.GREEN));
     }
