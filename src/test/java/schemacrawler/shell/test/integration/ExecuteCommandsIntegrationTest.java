@@ -92,7 +92,7 @@ public class ExecuteCommandsIntegrationTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("Output sent to "));
+    assertThat(returnValue.toString(), startsWith("output sent to "));
   }
 
   @Before
@@ -111,15 +111,15 @@ public class ExecuteCommandsIntegrationTest
 
   private void connect()
   {
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
+    shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler");
+    assertThat(state.isConnected(), is(true));
   }
 
   private void loadCatalog()
   {
-    assertThat(shell.evaluate(() -> "load-catalog -infolevel minimum"),
-               is(true));
+    shell.evaluate(() -> "load-catalog -infolevel minimum");
+    assertThat(state.isLoaded(), is(true));
   }
 
 }

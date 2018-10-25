@@ -30,14 +30,17 @@ package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.jline.utils.AttributedString;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,11 +97,14 @@ public class ConnectCommandsIntegrationTest
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
-    assertThat(shell
+    final Object returnValue = shell
       .evaluate(() -> command
-                      + " -server hsqldb -user sa -database schemacrawler"),
-               is(true));
+                      + " -server hsqldb -user sa -database schemacrawler");
     assertThat(shell.evaluate(() -> "is-connected"), is(true));
+
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("connected"));
     assertConnection();
 
     assertThat(shell.evaluate(() -> "disconnect"), nullValue());
@@ -126,11 +132,14 @@ public class ConnectCommandsIntegrationTest
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
-    assertThat(shell
+    final Object returnValue = shell
       .evaluate(() -> command
-                      + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa"),
-               is(true));
+                      + " -url jdbc:hsqldb:hsql://localhost:9001/schemacrawler -user sa");
     assertThat(shell.evaluate(() -> "is-connected"), is(true));
+
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("connected"));
     assertConnection();
 
     assertThat(shell.evaluate(() -> "disconnect"), nullValue());

@@ -103,7 +103,7 @@ public class ExecuteCommands
       executable.execute();
 
       return new AttributedString(String
-        .format("Output sent to ", outputOptions.getOutputResource()),
+        .format("output sent to ", outputOptions.getOutputResource()),
                                   AttributedStyle.DEFAULT
                                     .foreground(AttributedStyle.GREEN));
     }
@@ -116,8 +116,8 @@ public class ExecuteCommands
   @ShellMethodAvailability
   public Availability isLoaded()
   {
-    final boolean isConnected = new LoadCommands(state).isLoaded();
-    return isConnected? Availability.available(): Availability
+    final boolean isLoaded = state.isLoaded();
+    return isLoaded? Availability.available(): Availability
       .unavailable("there is no schema metadata loaded");
   }
 

@@ -36,6 +36,8 @@ import java.util.logging.Level;
 
 import javax.validation.constraints.NotNull;
 
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -75,7 +77,7 @@ public class LoadCommands
   @ShellMethodAvailability
   public Availability isConnected()
   {
-    final boolean isConnected = new ConnectCommands(state).isConnected();
+    final boolean isConnected = state.isConnected();
     return isConnected? Availability.available(): Availability
       .unavailable("there is no database connection");
   }
@@ -83,12 +85,11 @@ public class LoadCommands
   @ShellMethod(value = "Check if the catalog is loaded")
   public boolean isLoaded()
   {
-    final Catalog catalog = state.getCatalog();
-    return catalog != null;
+    return state.isLoaded();
   }
 
   @ShellMethod(value = "Load a catalog", prefix = "-")
-  public boolean loadCatalog(@ShellOption(value = "-infolevel", help = "Determine the amount of database metadata retrieved") @NotNull final InfoLevel infoLevel)
+  public AttributedString loadCatalog(@ShellOption(value = "-infolevel", help = "Determine the amount of database metadata retrieved") @NotNull final InfoLevel infoLevel)
   {
     try (final Connection connection = state.getDataSource().getConnection();)
     {
@@ -119,7 +120,7 @@ public class LoadCommands
       state.setCatalog(catalog);
       LOGGER.log(Level.INFO, "Loaded catalog");
 
-      return isLoaded();
+      return success();
     }
     catch (final Exception e)
     {
@@ -134,6 +135,22 @@ public class LoadCommands
       .builder();
     outputOptionsBuilder.fromConfig(config);
     state.setOutputOptionsBuilder(outputOptionsBuilder);
+  }
+
+  private AttributedString success()
+  {
+    if (isLoaded())
+    {
+      return new AttributedString("loaded catalog",
+                                  AttributedStyle.DEFAULT
+                                    .foreground(AttributedStyle.GREEN));
+    }
+    else
+    {
+      return new AttributedString("did not load catalog",
+                                  AttributedStyle.DEFAULT
+                                    .foreground(AttributedStyle.RED));
+    }
   }
 
 }

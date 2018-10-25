@@ -31,11 +31,12 @@ package schemacrawler.shell.commands;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
 
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
@@ -74,13 +75,13 @@ public class ConnectCommands
   }
 
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
-  public boolean connect(@ShellOption(value = "-server", help = "Database system for which a SchemaCrawler plug-in is available") @NotNull final String databaseSystemIdentifier,
-                         @ShellOption(defaultValue = "", help = "Host name") final String host,
-                         @ShellOption(defaultValue = "0", help = "Port") final int port,
-                         @ShellOption(defaultValue = "", help = "Database name") final String database,
-                         @ShellOption(defaultValue = "", help = "Additional properties for the JDBC driver") final String urlx,
-                         @NotNull @ShellOption(help = "Database user name") final String user,
-                         @ShellOption(defaultValue = "", help = "Database password") final String password)
+  public AttributedString connect(@ShellOption(value = "-server", help = "Database system for which a SchemaCrawler plug-in is available") @NotNull final String databaseSystemIdentifier,
+                                  @ShellOption(defaultValue = "", help = "Host name") final String host,
+                                  @ShellOption(defaultValue = "0", help = "Port") final int port,
+                                  @ShellOption(defaultValue = "", help = "Database name") final String database,
+                                  @ShellOption(defaultValue = "", help = "Additional properties for the JDBC driver") final String urlx,
+                                  @NotNull @ShellOption(help = "Database user name") final String user,
+                                  @ShellOption(defaultValue = "", help = "Database password") final String password)
   {
     try
     {
@@ -103,7 +104,7 @@ public class ConnectCommands
       createDataSource(connectionUrl, user, password);
       loadSchemaRetrievalOptionsBuilder();
 
-      return isConnected();
+      return success();
     }
     catch (final SchemaCrawlerException | SQLException e)
     {
@@ -112,9 +113,9 @@ public class ConnectCommands
   }
 
   @ShellMethod(value = "Connect to a database, using a connection URL", prefix = "-")
-  public boolean connectUrl(@NotNull @ShellOption(value = "-url", help = "JDBC connection URL to the database") final String connectionUrl,
-                            @NotNull @ShellOption(help = "Database user name") final String user,
-                            @ShellOption(defaultValue = "", help = "Database password") final String password)
+  public AttributedString connectUrl(@NotNull @ShellOption(value = "-url", help = "JDBC connection URL to the database") final String connectionUrl,
+                                     @NotNull @ShellOption(help = "Database user name") final String user,
+                                     @ShellOption(defaultValue = "", help = "Database password") final String password)
   {
     try
     {
@@ -125,7 +126,7 @@ public class ConnectCommands
       createDataSource(connectionUrl, user, password);
       loadSchemaRetrievalOptionsBuilder();
 
-      return isConnected();
+      return success();
     }
     catch (final SchemaCrawlerException | SQLException e)
     {
@@ -142,20 +143,7 @@ public class ConnectCommands
   @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
   public boolean isConnected()
   {
-    try (final Connection connection = state.getDataSource().getConnection();)
-    {
-      LOGGER
-        .log(Level.INFO,
-             "Connected to: "
-                         + connection.getMetaData().getDatabaseProductName());
-    }
-    catch (final NullPointerException | SQLException e)
-    {
-      LOGGER.log(Level.WARNING, e.getMessage(), e);
-      return false;
-    }
-
-    return true;
+    return state.isConnected();
   }
 
   @ShellMethod(value = "List available SchemaCrawler database plugins", prefix = "-")
@@ -233,6 +221,22 @@ public class ConnectCommands
   {
     final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
     databaseConnector = registry.lookupDatabaseConnectorFromUrl(connectionUrl);
+  }
+
+  private AttributedString success()
+  {
+    if (isConnected())
+    {
+      return new AttributedString("connected",
+                                  AttributedStyle.DEFAULT
+                                    .foreground(AttributedStyle.GREEN));
+    }
+    else
+    {
+      return new AttributedString("not connected",
+                                  AttributedStyle.DEFAULT
+                                    .foreground(AttributedStyle.RED));
+    }
   }
 
 }

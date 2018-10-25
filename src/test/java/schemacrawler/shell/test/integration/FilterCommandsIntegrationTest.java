@@ -74,18 +74,18 @@ public class FilterCommandsIntegrationTest
   @Autowired
   private Shell shell;
 
+  @Before
+  public void connect()
+  {
+    shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler");
+    assertThat(state.isConnected(), is(true));
+  }
+
   @After
   public void disconnect()
   {
     state.disconnect();
-  }
-
-  @Before
-  public void connect()
-  {
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
   }
 
   @Test

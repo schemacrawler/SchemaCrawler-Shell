@@ -29,6 +29,10 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.state;
 
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.logging.Level;
+
 import javax.sql.DataSource;
 
 import org.springframework.stereotype.Component;
@@ -38,10 +42,14 @@ import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
 import schemacrawler.tools.options.OutputOptionsBuilder;
+import sf.util.SchemaCrawlerLogger;
 
 @Component("state")
 public class SchemaCrawlerShellState
 {
+
+  private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
+    .getLogger(SchemaCrawlerShellState.class.getName());
 
   private Catalog catalog;
   private DataSource dataSource;
@@ -94,6 +102,29 @@ public class SchemaCrawlerShellState
   public SchemaRetrievalOptionsBuilder getSchemaRetrievalOptionsBuilder()
   {
     return schemaRetrievalOptionsBuilder;
+  }
+
+  public boolean isConnected()
+  {
+    try (final Connection connection = dataSource.getConnection();)
+    {
+      LOGGER
+        .log(Level.INFO,
+             "Connected to: "
+                         + connection.getMetaData().getDatabaseProductName());
+    }
+    catch (final NullPointerException | SQLException e)
+    {
+      LOGGER.log(Level.WARNING, e.getMessage(), e);
+      return false;
+    }
+
+    return true;
+  }
+
+  public boolean isLoaded()
+  {
+    return catalog != null;
   }
 
   public void setAdditionalConfiguration(final Config additionalConfiguration)

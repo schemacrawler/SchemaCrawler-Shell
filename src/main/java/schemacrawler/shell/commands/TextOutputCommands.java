@@ -63,8 +63,8 @@ public class TextOutputCommands
   @ShellMethodAvailability
   public Availability isLoaded()
   {
-    final boolean isConnected = new LoadCommands(state).isLoaded();
-    return isConnected? Availability.available(): Availability
+    final boolean isLoaded = state.isLoaded();
+    return isLoaded? Availability.available(): Availability
       .unavailable("there is no schema metadata loaded");
   }
 

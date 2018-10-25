@@ -30,11 +30,14 @@ package schemacrawler.shell.test.integration;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import org.jline.utils.AttributedString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,9 +75,9 @@ public class LoadCommandsIntegrationTest
   @Before
   public void connect()
   {
-    assertThat(shell
-      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler"),
-               is(true));
+    shell
+      .evaluate(() -> "connect -server hsqldb -user sa -database schemacrawler");
+    assertThat(state.isConnected(), is(true));
   }
 
   @Test
@@ -96,8 +99,12 @@ public class LoadCommandsIntegrationTest
     assertThat(state.getCatalog(), nullValue());
     assertThat(shell.evaluate(() -> "is-loaded"), is(false));
 
-    assertThat(shell.evaluate(() -> command + " -infolevel standard"),
-               is(true));
+    final Object returnValue = shell
+      .evaluate(() -> command + " -infolevel standard");
+
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("loaded catalog"));
 
     assertThat(state.getCatalog(), notNullValue());
     assertThat(state.getCatalog().getTables().size(), is(19));

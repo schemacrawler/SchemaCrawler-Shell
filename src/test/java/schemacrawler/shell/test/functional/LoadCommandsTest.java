@@ -30,13 +30,16 @@ package schemacrawler.shell.test.functional;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.SQLException;
 
+import org.jline.utils.AttributedString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,7 +95,11 @@ public class LoadCommandsTest
 
     assertThat(state.getCatalog(), nullValue());
 
-    assertThat(invoke(commandTarget, InfoLevel.standard), is(true));
+    final Object returnValue = invoke(commandTarget, InfoLevel.standard);
+
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("loaded catalog"));
 
     assertThat(state.getCatalog(), notNullValue());
     assertThat(state.getCatalog().getTables().size(), is(19));

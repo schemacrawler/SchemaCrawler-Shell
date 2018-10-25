@@ -106,7 +106,7 @@ public class FilterCommands
   @ShellMethodAvailability
   public Availability isConnected()
   {
-    final boolean isConnected = new ConnectCommands(state).isConnected();
+    final boolean isConnected = state.isConnected();
     return isConnected? Availability.available(): Availability
       .unavailable("there is no database connection");
   }

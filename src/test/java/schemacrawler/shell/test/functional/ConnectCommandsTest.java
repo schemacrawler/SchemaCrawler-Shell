@@ -30,13 +30,16 @@ package schemacrawler.shell.test.functional;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.jline.utils.AttributedString;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,16 +95,18 @@ public class ConnectCommandsTest
                              String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget,
-                      "hsqldb",
-                      "",
-                      0,
-                      "schemacrawler",
-                      "",
-                      "sa",
-                      ""),
-               is(true));
+    final Object returnValue = invoke(commandTarget,
+                                      "hsqldb",
+                                      "",
+                                      0,
+                                      "schemacrawler",
+                                      "",
+                                      "sa",
+                                      "");
 
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("connected"));
     assertConnection();
   }
 
@@ -124,12 +129,14 @@ public class ConnectCommandsTest
                              String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-    assertThat(invoke(commandTarget,
-                      "jdbc:hsqldb:hsql://localhost:9001/schemacrawler",
-                      "sa",
-                      ""),
-               is(true));
+    final Object returnValue = invoke(commandTarget,
+                                      "jdbc:hsqldb:hsql://localhost:9001/schemacrawler",
+                                      "sa",
+                                      "");
 
+    assertThat(returnValue, notNullValue());
+    assertThat(returnValue, is(instanceOf(AttributedString.class)));
+    assertThat(returnValue.toString(), startsWith("connected"));
     assertConnection();
   }
 

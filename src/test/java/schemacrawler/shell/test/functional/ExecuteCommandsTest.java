@@ -97,7 +97,7 @@ public class ExecuteCommandsTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("Output sent to "));
+    assertThat(returnValue.toString(), startsWith("output sent to "));
   }
 
   @Before
