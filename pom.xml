@@ -38,18 +38,6 @@
     <spring.shell.version>2.0.1.RELEASE</spring.shell.version>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
     <dependency>
@@ -61,11 +49,6 @@
     <dependency>
       <groupId>us.fatehi</groupId>
       <artifactId>schemacrawler</artifactId>
-      <version>${schemacrawler.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>us.fatehi</groupId>
-      <artifactId>schemacrawler-hsqldb</artifactId>
       <version>${schemacrawler.version}</version>
     </dependency>
 
@@ -80,6 +63,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring.boot.version}</version>
       <exclusions>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
@@ -112,6 +96,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>us.fatehi</groupId>
+      <artifactId>schemacrawler-hsqldb</artifactId>
+      <version>${schemacrawler.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 
@@ -128,6 +119,21 @@
       </properties>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring.boot.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>repackage</goal>
+                </goals>
+                <configuration>
+                  <classifier>exec</classifier>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
@@ -327,9 +333,6 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-
-      <!-- NOTE: Use spring-boot-maven-plugin to generate an uber-jar with 
-        required dependencies -->
 
     </plugins>
   </build>
