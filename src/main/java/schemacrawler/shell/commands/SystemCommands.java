@@ -46,7 +46,10 @@ public class SystemCommands
   private static final SchemaCrawlerLogger LOGGER = SchemaCrawlerLogger
     .getLogger(SystemCommands.class.getName());
 
-  @ShellMethod(value = "System version information")
+  @ShellMethod(key = {
+                       "version",
+                       "sys-info",
+                       "system-info" }, value = "System information")
   public void systemInfo()
   {
     final SchemaCrawlerInfo scInfo = new SchemaCrawlerInfo();
@@ -55,13 +58,6 @@ public class SystemCommands
     System.out.println(osInfo);
     final JvmSystemInfo jvmInfo = new JvmSystemInfo();
     System.out.println(jvmInfo);
-  }
-
-  @ShellMethod(value = "SchemaCrawler version information")
-  public void version()
-  {
-    final SchemaCrawlerInfo scInfo = new SchemaCrawlerInfo();
-    System.out.println(scInfo);
   }
 
 }

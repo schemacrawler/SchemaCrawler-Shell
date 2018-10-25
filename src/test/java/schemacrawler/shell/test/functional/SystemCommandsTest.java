@@ -81,7 +81,7 @@ public class SystemCommandsTest
     final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(), is("System version information"));
+    assertThat(commandTarget.getHelp(), is("System information"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
@@ -92,13 +92,12 @@ public class SystemCommandsTest
   public void version()
   {
     final String command = "version";
-    final String commandMethod = "version";
+    final String commandMethod = "systemInfo";
 
     final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
     assertThat(commandTarget.getGroup(), is("4. System Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("SchemaCrawler version information"));
+    assertThat(commandTarget.getHelp(), is("System information"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
