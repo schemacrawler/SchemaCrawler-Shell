@@ -33,6 +33,8 @@ import java.sql.Connection;
 
 import javax.validation.constraints.NotNull;
 
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -80,7 +82,7 @@ public class ExecuteCommands
   }
 
   @ShellMethod(value = "Execute a SchemaCrawler command", prefix = "-")
-  public void execute(@NotNull @ShellOption(help = "SchemaCrawler command") final String command)
+  public AttributedString execute(@NotNull @ShellOption(help = "SchemaCrawler command") final String command)
   {
     try (Connection connection = state.getDataSource().getConnection();)
     {
@@ -99,6 +101,11 @@ public class ExecuteCommands
       executable.setConnection(connection);
       executable.setSchemaRetrievalOptions(schemaRetrievalOptions);
       executable.execute();
+
+      return new AttributedString(String
+        .format("Output sent to ", outputOptions.getOutputResource()),
+                                  AttributedStyle.DEFAULT
+                                    .foreground(AttributedStyle.GREEN));
     }
     catch (final Exception e)
     {
