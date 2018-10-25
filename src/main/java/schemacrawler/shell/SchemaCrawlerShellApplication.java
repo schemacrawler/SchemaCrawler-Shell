@@ -50,9 +50,8 @@ public class SchemaCrawlerShellApplication
   @Bean
   public PromptProvider schemaCrawlerShellPromptProvider()
   {
-    return () -> new AttributedString("schemacrawler>",
-                                      AttributedStyle.DEFAULT
-                                        .foreground(AttributedStyle.GREEN));
+    return () -> new AttributedString("schemacrawler> ",
+                                      AttributedStyle.DEFAULT);
   }
 
 }

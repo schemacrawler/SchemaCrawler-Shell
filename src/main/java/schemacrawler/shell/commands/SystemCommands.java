@@ -39,7 +39,7 @@ import schemacrawler.SchemaCrawlerInfo;
 import sf.util.SchemaCrawlerLogger;
 
 @ShellComponent
-@ShellCommandGroup("4. System Commands")
+@ShellCommandGroup("6. System Commands")
 public class SystemCommands
 {
 

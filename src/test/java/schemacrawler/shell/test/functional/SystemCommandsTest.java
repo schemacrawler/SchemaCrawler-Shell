@@ -80,7 +80,7 @@ public class SystemCommandsTest
 
     final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getGroup(), is("6. System Commands"));
     assertThat(commandTarget.getHelp(), is("System information"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
@@ -96,7 +96,7 @@ public class SystemCommandsTest
 
     final MethodTarget commandTarget = lookupCommand(registry, command);
     assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("4. System Commands"));
+    assertThat(commandTarget.getGroup(), is("6. System Commands"));
     assertThat(commandTarget.getHelp(), is("System information"));
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
