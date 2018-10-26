@@ -93,15 +93,29 @@ public class ExecuteCommandsIntegrationTest
     System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));
   }
 
-  @Before
-  public void setUpStreams()
-    throws IOException
+  @Test
+  public void commands()
+    throws Exception
   {
-    out = new TestOutputStream();
-    System.setOut(new PrintStream(out));
+    final String command = "commands";
+    final String commandMethod = "commands";
 
-    err = new TestOutputStream();
-    System.setErr(new PrintStream(err));
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("5. SchemaCrawler Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("List available SchemaCrawler commands"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    final Object returnValue = shell.evaluate(() -> command);
+
+    assertThat(returnValue, nullValue());
+    assertThat(returnValue, not(instanceOf(Throwable.class)));
+
+    out.assertEquals(testName.currentMethodFullName());
+    err.assertEmpty();
   }
 
   @Test
@@ -132,36 +146,22 @@ public class ExecuteCommandsIntegrationTest
     err.assertEmpty();
   }
 
-  @Test
-  public void commands()
-    throws Exception
-  {
-    final String command = "commands";
-    final String commandMethod = "commands";
-
-    final MethodTarget commandTarget = lookupCommand(shell, command);
-    assertThat(commandTarget, notNullValue());
-    assertThat(commandTarget.getGroup(), is("5. SchemaCrawler Commands"));
-    assertThat(commandTarget.getHelp(),
-               is("List available SchemaCrawler commands"));
-    assertThat(commandTarget.getMethod(),
-               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
-    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
-
-    final Object returnValue = shell.evaluate(() -> command);
-
-    assertThat(returnValue, nullValue());
-    assertThat(returnValue, not(instanceOf(Throwable.class)));
-
-    out.assertEquals(testName.currentMethodFullName());
-    err.assertEmpty();
-  }
-
   @Before
   public void setup()
   {
     connect();
     loadCatalog();
+  }
+
+  @Before
+  public void setUpStreams()
+    throws IOException
+  {
+    out = new TestOutputStream();
+    System.setOut(new PrintStream(out));
+
+    err = new TestOutputStream();
+    System.setErr(new PrintStream(err));
   }
 
   @After

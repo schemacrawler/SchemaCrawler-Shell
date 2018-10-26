@@ -31,16 +31,24 @@ package schemacrawler.shell.test.integration;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.jline.utils.AttributedString;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +63,8 @@ import schemacrawler.shell.commands.ConnectCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
+import schemacrawler.test.utility.TestName;
+import schemacrawler.test.utility.TestOutputStream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
@@ -67,10 +77,23 @@ public class ConnectCommandsIntegrationTest
 
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ConnectCommands.class;
 
+  @Rule
+  public TestName testName = new TestName();
+
   @Autowired
   private SchemaCrawlerShellState state;
   @Autowired
   private Shell shell;
+
+  private TestOutputStream out;
+  private TestOutputStream err;
+
+  @After
+  public void cleanUpStreams()
+  {
+    System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+    System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));
+  }
 
   @Test
   public void connect()
@@ -144,6 +167,42 @@ public class ConnectCommandsIntegrationTest
 
     assertThat(shell.evaluate(() -> "disconnect"), nullValue());
     assertThat(shell.evaluate(() -> "is-connected"), is(false));
+  }
+
+  @Test
+  public void servers()
+    throws Exception
+  {
+    final String command = "servers";
+    final String commandMethod = "servers";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("1. Database Connection Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("List available SchemaCrawler database plugins"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    final Object returnValue = shell.evaluate(() -> command);
+
+    assertThat(returnValue, nullValue());
+    assertThat(returnValue, not(instanceOf(Throwable.class)));
+
+    out.assertEquals(testName.currentMethodFullName());
+    err.assertEmpty();
+  }
+
+  @Before
+  public void setUpStreams()
+    throws IOException
+  {
+    out = new TestOutputStream();
+    System.setOut(new PrintStream(out));
+
+    err = new TestOutputStream();
+    System.setErr(new PrintStream(err));
   }
 
   private void assertConnection()

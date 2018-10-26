@@ -96,17 +96,6 @@ public class ExecuteCommandsTest
     System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));
   }
 
-  @Before
-  public void setUpStreams()
-    throws IOException
-  {
-    out = new TestOutputStream();
-    System.setOut(new PrintStream(out));
-
-    err = new TestOutputStream();
-    System.setErr(new PrintStream(err));
-  }
-
   @Test
   public void commands()
     throws Exception
@@ -173,6 +162,17 @@ public class ExecuteCommandsTest
     // Load schema
     final LoadCommands loadCommands = new LoadCommands(state);
     loadCommands.loadCatalog(InfoLevel.minimum);
+  }
+
+  @Before
+  public void setUpStreams()
+    throws IOException
+  {
+    out = new TestOutputStream();
+    System.setOut(new PrintStream(out));
+
+    err = new TestOutputStream();
+    System.setErr(new PrintStream(err));
   }
 
   @After
