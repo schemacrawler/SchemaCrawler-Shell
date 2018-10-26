@@ -38,9 +38,15 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
 import org.jline.utils.AttributedString;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +61,8 @@ import schemacrawler.shell.commands.ExecuteCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
+import schemacrawler.test.utility.TestName;
+import schemacrawler.test.utility.TestOutputStream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
@@ -67,13 +75,38 @@ public class ExecuteCommandsIntegrationTest
 
   private static final Class<?> COMMANDS_CLASS_UNDER_TEST = ExecuteCommands.class;
 
+  @Rule
+  public TestName testName = new TestName();
+
   @Autowired
   private Shell shell;
   @Autowired
   private SchemaCrawlerShellState state;
 
+  private TestOutputStream out;
+  private TestOutputStream err;
+
+  @After
+  public void cleanUpStreams()
+  {
+    System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+    System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err)));
+  }
+
+  @Before
+  public void setUpStreams()
+    throws IOException
+  {
+    out = new TestOutputStream();
+    System.setOut(new PrintStream(out));
+
+    err = new TestOutputStream();
+    System.setErr(new PrintStream(err));
+  }
+
   @Test
   public void execute()
+    throws Exception
   {
     final String command = "execute";
     final String commandMethod = "execute";
@@ -94,10 +127,14 @@ public class ExecuteCommandsIntegrationTest
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
     assertThat(returnValue.toString(), startsWith("output sent to "));
+
+    out.assertEquals(testName.currentMethodFullName());
+    err.assertEmpty();
   }
 
   @Test
   public void commands()
+    throws Exception
   {
     final String command = "commands";
     final String commandMethod = "commands";
@@ -115,6 +152,9 @@ public class ExecuteCommandsIntegrationTest
 
     assertThat(returnValue, nullValue());
     assertThat(returnValue, not(instanceOf(Throwable.class)));
+
+    out.assertEquals(testName.currentMethodFullName());
+    err.assertEmpty();
   }
 
   @Before
