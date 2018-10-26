@@ -31,6 +31,7 @@ package schemacrawler.shell.test.integration;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.StringStartsWith.startsWith;
@@ -93,6 +94,27 @@ public class ExecuteCommandsIntegrationTest
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
     assertThat(returnValue.toString(), startsWith("output sent to "));
+  }
+
+  @Test
+  public void commands()
+  {
+    final String command = "commands";
+    final String commandMethod = "commands";
+
+    final MethodTarget commandTarget = lookupCommand(shell, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("5. SchemaCrawler Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("List available SchemaCrawler commands"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    final Object returnValue = shell.evaluate(() -> command);
+
+    assertThat(returnValue, nullValue());
+    assertThat(returnValue, not(instanceOf(Throwable.class)));
   }
 
   @Before

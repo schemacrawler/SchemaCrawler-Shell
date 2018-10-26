@@ -77,6 +77,25 @@ public class ExecuteCommandsTest
   private ApplicationContext context;
 
   @Test
+  public void commands()
+  {
+    final String command = "commands";
+    final String commandMethod = "commands";
+
+    final MethodTarget commandTarget = lookupCommand(registry, command);
+    assertThat(commandTarget, notNullValue());
+    assertThat(commandTarget.getGroup(), is("5. SchemaCrawler Commands"));
+    assertThat(commandTarget.getHelp(),
+               is("List available SchemaCrawler commands"));
+    assertThat(commandTarget.getMethod(),
+               is(findMethod(COMMANDS_CLASS_UNDER_TEST, commandMethod)));
+    assertThat(commandTarget.getAvailability().isAvailable(), is(true));
+
+    invoke(commandTarget);
+    // TODO: Test output
+  }
+
+  @Test
   public void execute()
     throws SQLException
   {
