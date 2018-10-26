@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.commands;
 
 
+import java.util.logging.Level;
+
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -52,6 +54,8 @@ public class SystemCommands
                        "system-info" }, value = "System information")
   public void systemInfo()
   {
+    LOGGER.log(Level.INFO, "system-info");
+
     final SchemaCrawlerInfo scInfo = new SchemaCrawlerInfo();
     System.out.println(scInfo);
     final OperatingSystemInfo osInfo = new OperatingSystemInfo();

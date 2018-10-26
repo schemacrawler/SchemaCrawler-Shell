@@ -93,6 +93,8 @@ public class LoadCommands
   {
     try (final Connection connection = state.getDataSource().getConnection();)
     {
+      LOGGER.log(Level.INFO, new StringFormat("infoLevel=%s", infoLevel));
+
       loadOutputOptionsBuilder();
 
       final Config additionalConfiguration = state.getAdditionalConfiguration();

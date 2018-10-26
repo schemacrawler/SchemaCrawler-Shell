@@ -31,6 +31,7 @@ package schemacrawler.shell.commands;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import javax.validation.constraints.NotNull;
 
@@ -54,6 +55,7 @@ import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.databaseconnector.DatabaseConnector;
 import schemacrawler.tools.databaseconnector.DatabaseConnectorRegistry;
 import sf.util.SchemaCrawlerLogger;
+import sf.util.StringFormat;
 import us.fatehi.commandlineparser.CommandLineUtility;
 
 @ShellComponent
@@ -85,6 +87,16 @@ public class ConnectCommands
   {
     try
     {
+      LOGGER
+        .log(Level.INFO,
+             new StringFormat("server=%s, host=%s, port=%d, database=%s, urlx=%s, user=%s, password=xxxx",
+                              databaseSystemIdentifier,
+                              host,
+                              port,
+                              database,
+                              urlx,
+                              user));
+
       sweep();
       lookupDatabaseConnectorFromServer(databaseSystemIdentifier);
       loadConfig();
@@ -119,6 +131,11 @@ public class ConnectCommands
   {
     try
     {
+      LOGGER.log(Level.INFO,
+                 new StringFormat("url=%s, user=%s, password=xxxx",
+                                  connectionUrl,
+                                  user));
+
       sweep();
       lookupDatabaseConnectorFromUrl(connectionUrl);
       loadConfig();
@@ -137,19 +154,25 @@ public class ConnectCommands
   @ShellMethod(value = "Disconnect from a database", prefix = "-")
   public void disconnect()
   {
+    LOGGER.log(Level.INFO, "disconnect");
+
     state.disconnect();
   }
 
   @ShellMethod(value = "Connect to a database, using a connection URL specification", prefix = "-")
   public boolean isConnected()
   {
-    return state.isConnected();
+    final boolean isConnected = state.isConnected();
+    LOGGER.log(Level.INFO, new StringFormat("isConnected=%b", isConnected));
+    return isConnected;
   }
 
   @ShellMethod(value = "List available SchemaCrawler database plugins", prefix = "-")
   public void servers()
     throws Exception
   {
+    LOGGER.log(Level.INFO, "servers");
+
     final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
     for (final DatabaseServerType server: registry)
     {
@@ -160,6 +183,8 @@ public class ConnectCommands
   @ShellMethod(value = "Disconnect from a database, and clear loaded catalog", prefix = "-")
   public void sweep()
   {
+    LOGGER.log(Level.INFO, "sweep");
+
     state.sweep();
   }
 
@@ -167,6 +192,8 @@ public class ConnectCommands
                                 final String user,
                                 final String password)
   {
+    LOGGER.log(Level.FINE, () -> "Creating data-source");
+
     final BasicDataSource dataSource = new BasicDataSource();
     dataSource.setUsername(user);
     dataSource.setPassword(password);
@@ -181,6 +208,8 @@ public class ConnectCommands
   private void loadConfig()
     throws SchemaCrawlerException
   {
+    LOGGER.log(Level.FINE, () -> "Loading configuration");
+
     // TODO: Find a way to get command-line arguments from AppRunner
     final Config argsMap = new Config();
     config = CommandLineUtility.loadConfig(argsMap, databaseConnector);
@@ -190,6 +219,8 @@ public class ConnectCommands
 
   private void loadSchemaCrawlerOptionsBuilder()
   {
+    LOGGER.log(Level.FINE, () -> "Creating SchemaCrawler options builder");
+
     final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = SchemaCrawlerOptionsBuilder
       .builder();
     schemaCrawlerOptionsBuilder.fromConfig(config);
@@ -199,6 +230,9 @@ public class ConnectCommands
   private void loadSchemaRetrievalOptionsBuilder()
     throws SQLException
   {
+    LOGGER.log(Level.FINE,
+               () -> "Creating SchemaCrawler retrieval options builder");
+
     try (final Connection connection = state.getDataSource().getConnection();)
     {
       final SchemaRetrievalOptionsBuilder schemaRetrievalOptionsBuilder = databaseConnector
@@ -211,6 +245,8 @@ public class ConnectCommands
   private void lookupDatabaseConnectorFromServer(final String databaseSystemIdentifier)
     throws SchemaCrawlerException
   {
+    LOGGER.log(Level.FINE, () -> "Creating SchemaCrawler options builder");
+
     final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
     databaseConnector = registry
       .lookupDatabaseConnector(databaseSystemIdentifier);
@@ -219,6 +255,8 @@ public class ConnectCommands
   private void lookupDatabaseConnectorFromUrl(final String connectionUrl)
     throws SchemaCrawlerException
   {
+    LOGGER.log(Level.FINE, () -> "Looking up database plugin");
+
     final DatabaseConnectorRegistry registry = new DatabaseConnectorRegistry();
     databaseConnector = registry.lookupDatabaseConnectorFromUrl(connectionUrl);
   }

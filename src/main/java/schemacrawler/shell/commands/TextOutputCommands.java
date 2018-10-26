@@ -32,6 +32,7 @@ package schemacrawler.shell.commands;
 import static sf.util.Utility.isBlank;
 
 import java.nio.file.Paths;
+import java.util.logging.Level;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
@@ -48,6 +49,7 @@ import schemacrawler.tools.options.OutputOptionsBuilder;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
+import sf.util.StringFormat;
 
 @ShellComponent
 @ShellCommandGroup("4. Text Output Commands")
@@ -79,6 +81,12 @@ public class TextOutputCommands
   {
     try
     {
+      LOGGER.log(Level.INFO,
+                 new StringFormat("title=%s, outputfile=%s, outputformat=%s",
+                                  title,
+                                  outputfile,
+                                  outputformat));
+
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 
@@ -107,6 +115,14 @@ public class TextOutputCommands
   {
     try
     {
+      LOGGER
+        .log(Level.INFO,
+             new StringFormat("noinfo=%b, noremarks=%b, weakassociations=%b, portablenames=%b",
+                              noinfo,
+                              noremarks,
+                              weakassociations,
+                              portablenames));
+
       final Config config = state.getAdditionalConfiguration();
 
       final SchemaTextOptionsBuilder textOptionsBuilder = SchemaTextOptionsBuilder
@@ -130,6 +146,12 @@ public class TextOutputCommands
   {
     try
     {
+      LOGGER.log(Level.INFO,
+                 new StringFormat("sorttables=%b, sortcolumns=%b, sortinout=%b",
+                                  sorttables,
+                                  sortcolumns,
+                                  sortinout));
+
       final Config config = state.getAdditionalConfiguration();
 
       final CommonTextOptionsBuilder textOptionsBuilder = CommonTextOptionsBuilder

@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.commands;
 
 
+import java.util.logging.Level;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -42,6 +44,7 @@ import schemacrawler.schemacrawler.RegularExpressionInclusionRule;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import sf.util.SchemaCrawlerLogger;
+import sf.util.StringFormat;
 
 @ShellComponent
 @ShellCommandGroup("2. Filter Commands")
@@ -61,7 +64,12 @@ public class FilterCommands
   {
     try
     {
-      System.err.println(state);
+      LOGGER.log(Level.INFO,
+                 new StringFormat("noemptytables=%b, parents=%d, children=%d",
+                                  noemptytables,
+                                  parents,
+                                  children));
+
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 
@@ -84,6 +92,15 @@ public class FilterCommands
   {
     try
     {
+      LOGGER
+        .log(Level.INFO,
+             new StringFormat("grepcolumns=%s, grepinout=%s, grepdef=%s, invertMatch=%b, onlyMatching=%b",
+                              grepcolumns,
+                              grepinout,
+                              grepdef,
+                              invertMatch,
+                              onlyMatching));
+
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 
@@ -107,6 +124,8 @@ public class FilterCommands
   public Availability isConnected()
   {
     final boolean isConnected = state.isConnected();
+    LOGGER.log(Level.INFO, new StringFormat("isConnected=%b", isConnected));
+
     return isConnected? Availability.available(): Availability
       .unavailable("there is no database connection");
   }
@@ -124,6 +143,19 @@ public class FilterCommands
   {
     try
     {
+      LOGGER
+        .log(Level.INFO,
+             new StringFormat("schemas=%s, tabletypes=%s, tables=%s, excludecolumns=%, routinetypes=%s, routines=%s, excludeinout=%s, synonyms=%s, sequences=%s",
+                              schemas,
+                              tabletypes,
+                              tables,
+                              excludecolumns,
+                              routinetypes,
+                              routines,
+                              excludeinout,
+                              synonyms,
+                              sequences));
+
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 

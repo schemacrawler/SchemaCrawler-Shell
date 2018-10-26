@@ -30,6 +30,7 @@ package schemacrawler.shell.commands;
 
 
 import java.sql.Connection;
+import java.util.logging.Level;
 
 import javax.validation.constraints.NotNull;
 
@@ -52,6 +53,7 @@ import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;
 import schemacrawler.tools.options.OutputOptions;
 import sf.util.SchemaCrawlerLogger;
+import sf.util.StringFormat;
 
 @ShellComponent
 @ShellCommandGroup("5. SchemaCrawler Commands")
@@ -69,6 +71,8 @@ public class ExecuteCommands
   {
     try
     {
+      LOGGER.log(Level.INFO, "commands");
+
       final CommandRegistry registry = new CommandRegistry();
       for (final CommandDescription command: registry)
       {
@@ -86,6 +90,8 @@ public class ExecuteCommands
   {
     try (Connection connection = state.getDataSource().getConnection();)
     {
+      LOGGER.log(Level.INFO, new StringFormat("command=%s", command));
+
       final SchemaCrawlerOptions schemaCrawlerOptions = state
         .getSchemaCrawlerOptionsBuilder().toOptions();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
@@ -116,6 +122,8 @@ public class ExecuteCommands
   @ShellMethodAvailability
   public Availability isLoaded()
   {
+    LOGGER.log(Level.INFO, "commands");
+
     final boolean isLoaded = state.isLoaded();
     return isLoaded? Availability.available(): Availability
       .unavailable("there is no schema metadata loaded");
