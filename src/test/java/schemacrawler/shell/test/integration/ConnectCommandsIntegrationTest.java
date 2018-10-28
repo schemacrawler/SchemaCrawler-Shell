@@ -37,6 +37,10 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
+import static schemacrawler.test.utility.FileHasContent.classpathResource;
+import static schemacrawler.test.utility.FileHasContent.fileResource;
+import static schemacrawler.test.utility.FileHasContent.hasNoContent;
+import static schemacrawler.test.utility.FileHasContent.hasSameContentAs;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -190,8 +194,10 @@ public class ConnectCommandsIntegrationTest
     assertThat(returnValue, nullValue());
     assertThat(returnValue, not(instanceOf(Throwable.class)));
 
-    out.assertEquals(testName.currentMethodFullName());
-    err.assertEmpty();
+    assertThat(fileResource(out),
+               hasSameContentAs(classpathResource(testName
+                 .currentMethodFullName())));
+    assertThat(fileResource(err), hasNoContent());
   }
 
   @Before
