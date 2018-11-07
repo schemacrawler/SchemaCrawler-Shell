@@ -33,6 +33,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -79,7 +81,7 @@ public class ConnectCommands
   @ShellMethod(value = "Connect to a database, using a server specification", prefix = "-")
   public AttributedString connect(@ShellOption(value = "-server", help = "Database system for which a SchemaCrawler plug-in is available") @NotNull final String databaseSystemIdentifier,
                                   @ShellOption(defaultValue = "", help = "Host name") final String host,
-                                  @ShellOption(defaultValue = "0", help = "Port") final int port,
+                                  @ShellOption(defaultValue = "0", help = "Port") @Min(0) @Max(65535) final int port,
                                   @ShellOption(defaultValue = "", help = "Database name") final String database,
                                   @ShellOption(defaultValue = "", help = "Additional properties for the JDBC driver") final String urlx,
                                   @NotNull @ShellOption(help = "Database user name") final String user,
