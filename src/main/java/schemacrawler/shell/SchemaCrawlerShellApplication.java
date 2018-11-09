@@ -41,20 +41,22 @@ public class SchemaCrawlerShellApplication
 
   public static void main(final String[] args)
   {
-    SpringApplication.run(SchemaCrawlerShellApplication.class, args);
+    final SpringApplication application = new SpringApplication(SchemaCrawlerShellApplication.class);
+    application.setBanner(new SchemaCrawlerBanner());
+    application.run(args);
+  }
+
+  @Override
+  public void run(final String... args)
+    throws Exception
+  {
+    // No-op
   }
 
   @Bean
   public PromptProvider schemaCrawlerShellPromptProvider()
   {
     return new SchemaCrawlerShellPromptProvider();
-  }
-
-  @Override
-  public void run(String... args)
-    throws Exception
-  {
-    // No-op
   }
 
 }
