@@ -28,33 +28,47 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell;
 
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.shell.jline.PromptProvider;
 
-@SpringBootApplication
-public class SchemaCrawlerShellApplication
-  implements CommandLineRunner
+import schemacrawler.shell.state.SchemaCrawlerShellState;
+
+@Configurable
+public class SchemaCrawlerShellPromptProvider
+  implements PromptProvider
 {
 
-  public static void main(final String[] args)
-  {
-    SpringApplication.run(SchemaCrawlerShellApplication.class, args);
-  }
-
-  @Bean
-  public PromptProvider schemaCrawlerShellPromptProvider()
-  {
-    return new SchemaCrawlerShellPromptProvider();
-  }
+  @Autowired
+  private SchemaCrawlerShellState state;
 
   @Override
-  public void run(String... args)
-    throws Exception
+  public AttributedString getPrompt()
   {
-    // No-op
+
+    final int foregroundColor;
+    if (state == null)
+    {
+      foregroundColor = AttributedStyle.WHITE;
+    }
+    else if (state.isLoaded())
+    {
+      foregroundColor = AttributedStyle.YELLOW;
+    }
+    else if (state.isConnected())
+    {
+      foregroundColor = AttributedStyle.GREEN;
+    }
+    else
+    {
+      foregroundColor = AttributedStyle.WHITE;
+    }
+
+    return new AttributedString("schemacrawler> ",
+                                AttributedStyle.DEFAULT.bold()
+                                  .foreground(foregroundColor));
   }
 
 }
