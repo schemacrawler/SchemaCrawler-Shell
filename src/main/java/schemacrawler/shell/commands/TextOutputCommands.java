@@ -29,9 +29,6 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.commands;
 
 
-import static sf.util.Utility.isBlank;
-
-import java.nio.file.Paths;
 import java.util.logging.Level;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,6 @@ import org.springframework.shell.standard.ShellOption;
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
-import schemacrawler.tools.options.OutputOptionsBuilder;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
@@ -71,35 +67,16 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Set output options", prefix = "-")
-  public void output(@ShellOption(defaultValue = "", help = "Title text on output") final String title,
-                     @ShellOption(value = {
-                                            "-o",
-                                            "-outputfile" }, defaultValue = "", help = "Output file name") final String outputfile,
-                     @ShellOption(value = {
-                                            "-fmt",
-                                            "-outputformat" }, defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
+  public void output(@ShellOption(defaultValue = "", help = "Title text on output") final String title)
   {
     try
     {
-      LOGGER.log(Level.INFO,
-                 new StringFormat("title=%s, outputfile=%s, outputformat=%s",
-                                  title,
-                                  outputfile,
-                                  outputformat));
+      LOGGER.log(Level.INFO, new StringFormat("title=%s", title));
 
       final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = state
         .getSchemaCrawlerOptionsBuilder();
 
       schemaCrawlerOptionsBuilder.title(title);
-
-      final OutputOptionsBuilder outputOptionsBuilder = state
-        .getOutputOptionsBuilder();
-
-      if (!isBlank(outputfile))
-      {
-        outputOptionsBuilder.withOutputFile(Paths.get(outputfile));
-      }
-      outputOptionsBuilder.withOutputFormatValue(outputformat);
     }
     catch (final Exception e)
     {

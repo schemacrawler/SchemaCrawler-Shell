@@ -70,6 +70,7 @@ import schemacrawler.shell.test.TestSchemaCrawlerShellState;
 import schemacrawler.test.utility.TestName;
 import schemacrawler.test.utility.TestOutputStream;
 import schemacrawler.tools.options.InfoLevel;
+import schemacrawler.tools.options.OutputOptions;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -139,10 +140,24 @@ public class ExecuteCommandsTest
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
+                             String.class,
+                             String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
-    final Object returnValue = invoke(commandTarget, "schema");
+    // Check state before invoking command
+    final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
+               startsWith("schemacrawler"));
+    assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
+
+    final Object returnValue = invoke(commandTarget, "schema", "", "text");
+
+    // Check state after invoking command
+    final OutputOptions postOutputOptions = state.getOutputOptionsBuilder()
+      .toOptions();
+    assertThat(postOutputOptions.getOutputFormatValue(), is("text"));
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));

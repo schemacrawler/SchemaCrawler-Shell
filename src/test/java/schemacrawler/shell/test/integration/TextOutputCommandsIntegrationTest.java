@@ -34,7 +34,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
@@ -56,7 +55,6 @@ import schemacrawler.shell.commands.TextOutputCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
-import schemacrawler.tools.options.OutputOptions;
 import schemacrawler.tools.text.base.CommonTextOptions;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptions;
@@ -91,8 +89,6 @@ public class TextOutputCommandsIntegrationTest
     assertThat(commandTarget.getMethod(),
                is(findMethod(COMMANDS_CLASS_UNDER_TEST,
                              commandMethod,
-                             String.class,
-                             String.class,
                              String.class)));
     assertThat(commandTarget.getAvailability().isAvailable(), is(true));
 
@@ -101,27 +97,13 @@ public class TextOutputCommandsIntegrationTest
       .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(preOptions.getTitle(), is(""));
 
-    final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
-      .toOptions();
-    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
-               startsWith("schemacrawler"));
-    assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
-
-    assertThat(shell
-      .evaluate(() -> command
-                      + " -fmt html -title title -outputfile outputfile.txt"),
+    assertThat(shell.evaluate(() -> command + " -title title"),
                not(instanceOf(Throwable.class)));
 
     // Check state after invoking command
     final SchemaCrawlerOptions postOptions = state
       .getSchemaCrawlerOptionsBuilder().toOptions();
     assertThat(postOptions.getTitle(), is("title"));
-
-    final OutputOptions postOutputOptions = state.getOutputOptionsBuilder()
-      .toOptions();
-    assertThat(postOutputOptions.getOutputFile().toFile().getName(),
-               is("outputfile.txt"));
-    assertThat(postOutputOptions.getOutputFormatValue(), is("html"));
   }
 
   @Before

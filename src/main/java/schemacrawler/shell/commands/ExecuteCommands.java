@@ -29,6 +29,9 @@ http://www.gnu.org/licenses/
 package schemacrawler.shell.commands;
 
 
+import static sf.util.Utility.isBlank;
+
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.logging.Level;
 
@@ -52,6 +55,7 @@ import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;
 import schemacrawler.tools.options.OutputOptions;
+import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 
@@ -86,18 +90,39 @@ public class ExecuteCommands
   }
 
   @ShellMethod(value = "Execute a SchemaCrawler command", prefix = "-")
-  public AttributedString execute(@NotNull @ShellOption(help = "SchemaCrawler command") final String command)
+  public AttributedString execute(@NotNull @ShellOption(help = "SchemaCrawler command") final String command,
+                                  @ShellOption(value = {
+                                                         "-o",
+                                                         "-outputfile" }, defaultValue = "", help = "Output file name") final String outputfile,
+                                  @ShellOption(value = {
+                                                         "-fmt",
+                                                         "-outputformat" }, defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
   {
-    try (Connection connection = state.getDataSource().getConnection();)
+    try (final Connection connection = state.getDataSource().getConnection();)
     {
-      LOGGER.log(Level.INFO, new StringFormat("command=%s", command));
+      LOGGER.log(Level.INFO,
+                 new StringFormat("command=%s, outputfile=%s, outputformat=%s",
+                                  command,
+                                  outputfile,
+                                  outputformat));
+
+      final OutputOptionsBuilder outputOptionsBuilder = state
+        .getOutputOptionsBuilder();
+      if (!isBlank(outputfile))
+      {
+        outputOptionsBuilder.withOutputFile(Paths.get(outputfile));
+      }
+      else
+      {
+        outputOptionsBuilder.withConsoleOutput();
+      }
+      outputOptionsBuilder.withOutputFormatValue(outputformat);
 
       final SchemaCrawlerOptions schemaCrawlerOptions = state
         .getSchemaCrawlerOptionsBuilder().toOptions();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
         .getSchemaRetrievalOptionsBuilder().toOptions();
-      final OutputOptions outputOptions = state.getOutputOptionsBuilder()
-        .toOptions();
+      final OutputOptions outputOptions = outputOptionsBuilder.toOptions();
 
       final SchemaCrawlerExecutable executable = new SchemaCrawlerExecutable(command);
       // Configure
