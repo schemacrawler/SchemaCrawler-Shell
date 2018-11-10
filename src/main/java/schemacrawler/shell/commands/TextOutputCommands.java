@@ -85,10 +85,10 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Show output", prefix = "-")
-  public void show(@ShellOption(arity = 1, help = "Whether to show database information") final boolean noinfo,
-                   @ShellOption(arity = 1, help = "Whether to sort remarks") final boolean noremarks,
-                   @ShellOption(arity = 1, help = "Whether to weak associations") final boolean weakassociations,
-                   @ShellOption(arity = 1, help = "Whether to use portable names") final boolean portablenames)
+  public void show(@ShellOption(arity = 1, defaultValue = "false", help = "Whether to show database information") final boolean noinfo,
+                   @ShellOption(arity = 1, defaultValue = "false", help = "Whether to sort remarks") final boolean noremarks,
+                   @ShellOption(arity = 1, defaultValue = "false", help = "Whether to weak associations") final boolean weakassociations,
+                   @ShellOption(arity = 1, defaultValue = "false", help = "Whether to use portable names") final boolean portablenames)
   {
     try
     {
@@ -117,9 +117,9 @@ public class TextOutputCommands
   }
 
   @ShellMethod(value = "Sort output", prefix = "-")
-  public void sort(@ShellOption(defaultValue = "false", arity = 1, help = "Whether to sort tables") final boolean sorttables,
-                   @ShellOption(defaultValue = "false", arity = 1, help = "Whether to sort table columns") final boolean sortcolumns,
-                   @ShellOption(defaultValue = "false", arity = 1, help = "Whether to routine parameters") final boolean sortinout)
+  public void sort(@ShellOption(arity = 1, defaultValue = "false", help = "Whether to sort tables") final boolean sorttables,
+                   @ShellOption(arity = 1, defaultValue = "false", help = "Whether to sort table columns") final boolean sortcolumns,
+                   @ShellOption(arity = 1, defaultValue = "false", help = "Whether to routine parameters") final boolean sortinout)
   {
     try
     {
