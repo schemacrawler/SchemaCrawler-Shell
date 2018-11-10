@@ -131,7 +131,7 @@ public class ConnectCommandsTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("connected"));
+    assertThat(returnValue.toString(), startsWith("Connected"));
     assertConnection();
   }
 
@@ -161,7 +161,7 @@ public class ConnectCommandsTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("connected"));
+    assertThat(returnValue.toString(), startsWith("Connected"));
     assertConnection();
   }
 

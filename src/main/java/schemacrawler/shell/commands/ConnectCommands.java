@@ -267,13 +267,13 @@ public class ConnectCommands
   {
     if (isConnected())
     {
-      return new AttributedString("connected",
+      return new AttributedString("Connected",
                                   AttributedStyle.DEFAULT
-                                    .foreground(AttributedStyle.GREEN));
+                                    .foreground(AttributedStyle.CYAN));
     }
     else
     {
-      return new AttributedString("not connected",
+      return new AttributedString("Not connected",
                                   AttributedStyle.DEFAULT
                                     .foreground(AttributedStyle.RED));
     }

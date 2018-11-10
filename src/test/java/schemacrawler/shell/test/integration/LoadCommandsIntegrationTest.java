@@ -104,7 +104,7 @@ public class LoadCommandsIntegrationTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("loaded catalog"));
+    assertThat(returnValue.toString(), startsWith("Loaded catalog"));
 
     assertThat(state.getCatalog(), notNullValue());
     assertThat(state.getCatalog().getTables().size(), is(19));

@@ -143,13 +143,13 @@ public class LoadCommands
   {
     if (isLoaded())
     {
-      return new AttributedString("loaded catalog",
+      return new AttributedString("Loaded catalog",
                                   AttributedStyle.DEFAULT
-                                    .foreground(AttributedStyle.GREEN));
+                                    .foreground(AttributedStyle.CYAN));
     }
     else
     {
-      return new AttributedString("did not load catalog",
+      return new AttributedString("Did not load catalog",
                                   AttributedStyle.DEFAULT
                                     .foreground(AttributedStyle.RED));
     }

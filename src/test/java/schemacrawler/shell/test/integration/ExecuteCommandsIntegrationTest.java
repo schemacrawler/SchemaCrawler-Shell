@@ -159,7 +159,7 @@ public class ExecuteCommandsIntegrationTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("completed"));
+    assertThat(returnValue.toString(), startsWith("Completed"));
 
     assertThat(fileResource(out),
                hasSameContentAs(classpathResource(testName

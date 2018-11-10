@@ -146,15 +146,19 @@ public class ExecuteCommands
       final String message;
       if (isBlank(outputfile))
       {
-        message = "completed";
+        message = "Completed";
       }
       else
       {
-        message = String.format("output sent to %s", outputfile);
+        message = String.format("Output sent to %s", outputfile);
       }
       return new AttributedString(message,
                                   AttributedStyle.DEFAULT
-                                    .foreground(AttributedStyle.GREEN));
+                                    .foreground(AttributedStyle.CYAN));
+    }
+    catch (final RuntimeException e)
+    {
+      throw e;
     }
     catch (final Exception e)
     {
