@@ -148,8 +148,6 @@ public class ExecuteCommandsTest
     // Check state before invoking command
     final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
       .toOptions();
-    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
-               startsWith("schemacrawler"));
     assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
 
     final Object returnValue = invoke(commandTarget, "schema", "", "text");
@@ -161,7 +159,7 @@ public class ExecuteCommandsTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("output sent to "));
+    assertThat(returnValue.toString(), startsWith("completed"));
 
     assertThat(fileResource(out),
                hasSameContentAs(classpathResource(testName

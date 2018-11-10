@@ -147,8 +147,6 @@ public class ExecuteCommandsIntegrationTest
     // Check state before invoking command
     final OutputOptions preOutputOptions = state.getOutputOptionsBuilder()
       .toOptions();
-    assertThat(preOutputOptions.getOutputFile().toFile().getName(),
-               startsWith("schemacrawler"));
     assertThat(preOutputOptions.getOutputFormatValue(), is("text"));
 
     final Object returnValue = shell
@@ -161,7 +159,7 @@ public class ExecuteCommandsIntegrationTest
 
     assertThat(returnValue, notNullValue());
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
-    assertThat(returnValue.toString(), startsWith("output sent to "));
+    assertThat(returnValue.toString(), startsWith("completed"));
 
     assertThat(fileResource(out),
                hasSameContentAs(classpathResource(testName

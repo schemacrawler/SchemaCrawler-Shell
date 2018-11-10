@@ -54,6 +54,7 @@ import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
 import schemacrawler.tools.executable.SchemaCrawlerExecutable;
+import schemacrawler.tools.integration.graph.GraphOutputFormat;
 import schemacrawler.tools.options.OutputOptions;
 import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
@@ -124,6 +125,15 @@ public class ExecuteCommands
         .getSchemaRetrievalOptionsBuilder().toOptions();
       final OutputOptions outputOptions = outputOptionsBuilder.toOptions();
 
+      // Output file name has to be specified for diagrams
+      // (Check after output options have been built)
+      if (GraphOutputFormat
+        .isSupportedFormat(outputOptions.getOutputFormatValue())
+          && isBlank(outputfile))
+      {
+        throw new RuntimeException("Output file has to be specified for schema diagrams");
+      }
+
       final SchemaCrawlerExecutable executable = new SchemaCrawlerExecutable(command);
       // Configure
       executable.setOutputOptions(outputOptions);
@@ -133,8 +143,16 @@ public class ExecuteCommands
       executable.setSchemaRetrievalOptions(schemaRetrievalOptions);
       executable.execute();
 
-      return new AttributedString(String
-        .format("output sent to %s", outputOptions.getOutputResource()),
+      final String message;
+      if (isBlank(outputfile))
+      {
+        message = "completed";
+      }
+      else
+      {
+        message = String.format("output sent to %s", outputfile);
+      }
+      return new AttributedString(message,
                                   AttributedStyle.DEFAULT
                                     .foreground(AttributedStyle.GREEN));
     }
