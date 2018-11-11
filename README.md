@@ -8,7 +8,7 @@
 
 SchemaCrawler is a free database schema discovery and comprehension tool. SchemaCrawler is available under a number of [licenses](http://sualeh.github.io/SchemaCrawler/license.html).
 
-This project provides SchemaCrawler provides an interactive shell. See [information on how to use SchemaCrawler Interactive Shell on the SchemaCrawler website](https://www.schemacrawler.com/schemacrawler-shell.html).
+This project provides SchemaCrawler provides an interactive shell. See [information on how to use SchemaCrawler Interactive Shell](https://www.schemacrawler.com/schemacrawler-shell.html) on the SchemaCrawler website.
 
 
 ## To Build and Run
