@@ -1,6 +1,15 @@
 [![Build Status](https://travis-ci.org/schemacrawler/SchemaCrawler-Shell.svg?branch=master)](https://travis-ci.org/schemacrawler/SchemaCrawler-Shell)
 
-# SchemaCrawler Interactive Shell
+# ![SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler/raw/master/schemacrawler-docs/logo/schemacrawler_logo.png?raw=true) SchemaCrawler Interactive Shell
+
+> **Please see the [SchemaCrawler website](http://www.schemacrawler.com/) for more details.**
+
+## About
+
+SchemaCrawler is a free database schema discovery and comprehension tool. SchemaCrawler is available under a number of [licenses](http://sualeh.github.io/SchemaCrawler/license.html).
+
+This project provides SchemaCrawler provides an interactive shell. See [information on how to use SchemaCrawler Interactive Shell on the SchemaCrawler website](https://www.schemacrawler.com/schemacrawler-shell.html).
+
 
 ## To Build and Run
 
@@ -15,7 +24,3 @@ Run
 ```sh
 java -jar .\target\schemacrawler-shell-15.01.05.01-exec.jar
 ```
-
-## To Use
-
-See [instructions on the SchemaCrawler website](https://www.schemacrawler.com/schemacrawler-shell.html).
