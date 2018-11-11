@@ -33,6 +33,7 @@ import static sf.util.Utility.isBlank;
 
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 
 import javax.validation.constraints.NotNull;
@@ -102,7 +103,22 @@ public class ExecuteCommands
                                                          "-fmt",
                                                          "-outputformat" }, defaultValue = "", help = "Format of the SchemaCrawler output") final String outputformat)
   {
-    try (final Connection connection = state.getDataSource().getConnection();)
+
+    Connection connection = null;
+    try
+    {
+      if (state.isConnected())
+      {
+        connection = state.getDataSource().getConnection();
+      }
+    }
+    catch (final SQLException e)
+    {
+      LOGGER.log(Level.FINE, e.getMessage(), e);
+      connection = null;
+    }
+
+    try
     {
       LOGGER.log(Level.INFO,
                  new StringFormat("command=%s, outputfile=%s, outputformat=%s",
@@ -173,6 +189,20 @@ public class ExecuteCommands
     catch (final Exception e)
     {
       throw new RuntimeException("Cannot execute SchemaCrawler command", e);
+    }
+    finally
+    {
+      if (connection != null)
+      {
+        try
+        {
+          connection.close();
+        }
+        catch (final SQLException e)
+        {
+          throw new RuntimeException("Cannot execute SchemaCrawler command", e);
+        }
+      }
     }
   }
 
