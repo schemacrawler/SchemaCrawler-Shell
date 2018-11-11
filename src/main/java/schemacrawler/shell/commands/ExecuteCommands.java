@@ -47,13 +47,16 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
+import schemacrawler.schema.Catalog;
+import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
+import schemacrawler.tools.executable.CommandDaisyChain;
 import schemacrawler.tools.executable.CommandDescription;
 import schemacrawler.tools.executable.CommandRegistry;
-import schemacrawler.tools.executable.SchemaCrawlerExecutable;
+import schemacrawler.tools.executable.SchemaCrawlerCommand;
 import schemacrawler.tools.integration.graph.GraphOutputFormat;
 import schemacrawler.tools.options.OutputOptions;
 import schemacrawler.tools.options.OutputOptionsBuilder;
@@ -124,6 +127,7 @@ public class ExecuteCommands
       final SchemaRetrievalOptions schemaRetrievalOptions = state
         .getSchemaRetrievalOptionsBuilder().toOptions();
       final OutputOptions outputOptions = outputOptionsBuilder.toOptions();
+      final Config additionalConfiguration = state.getAdditionalConfiguration();
 
       // Output file name has to be specified for diagrams
       // (Check after output options have been built)
@@ -134,14 +138,20 @@ public class ExecuteCommands
         throw new RuntimeException("Output file has to be specified for schema diagrams");
       }
 
-      final SchemaCrawlerExecutable executable = new SchemaCrawlerExecutable(command);
-      // Configure
-      executable.setOutputOptions(outputOptions);
-      executable.setSchemaCrawlerOptions(schemaCrawlerOptions);
-      executable.setAdditionalConfiguration(state.getAdditionalConfiguration());
-      executable.setConnection(connection);
-      executable.setSchemaRetrievalOptions(schemaRetrievalOptions);
-      executable.execute();
+      final Catalog catalog = state.getCatalog();
+
+      // NOTE: The daisy chain command may change the provided output
+      // options for each chained command
+      final SchemaCrawlerCommand scCommand = new CommandDaisyChain(command);
+      scCommand.setSchemaCrawlerOptions(schemaCrawlerOptions);
+      scCommand.setOutputOptions(outputOptions);
+      scCommand.setAdditionalConfiguration(additionalConfiguration);
+      scCommand.setIdentifiers(schemaRetrievalOptions.getIdentifiers());
+
+      scCommand.setConnection(connection);
+      scCommand.setCatalog(catalog);
+
+      scCommand.execute();
 
       final String message;
       if (isBlank(outputfile))
