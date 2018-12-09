@@ -7,11 +7,11 @@
   <parent>
     <groupId>us.fatehi</groupId>
     <artifactId>schemacrawler-parent</artifactId>
-    <version>15.02.02</version>
+    <version>15.03.01</version>
   </parent>
 
   <artifactId>schemacrawler-shell</artifactId>
-  <version>15.02.02.01</version>
+  <version>15.03.01.01</version>
   <packaging>jar</packaging>
 
   <name>SchemaCrawler Shell</name>
@@ -33,7 +33,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <schemacrawler.version>15.02.02</schemacrawler.version>
+    <schemacrawler.version>15.03.01</schemacrawler.version>
     <spring.boot.version>1.5.8.RELEASE</spring.boot.version>
     <spring.shell.version>2.0.1.RELEASE</spring.shell.version>
   </properties>
@@ -298,7 +298,7 @@
               <additionalOptions>
                 <additionalOption>-Xdoclint:none</additionalOption>
               </additionalOptions>
-              <bottom>Copyright © 2000-2018 {organizationName}. All
+              <bottom>Copyright © 2000-2019 {organizationName}. All
                 rights reserved.</bottom>
               <doctitle>SchemaCrawler ${project.version}</doctitle>
             </configuration>
