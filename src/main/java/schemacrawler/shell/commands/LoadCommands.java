@@ -48,12 +48,12 @@ import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schema.Catalog;
 import schemacrawler.schemacrawler.Config;
+import schemacrawler.schemacrawler.InfoLevel;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.catalogloader.CatalogLoader;
 import schemacrawler.tools.catalogloader.CatalogLoaderRegistry;
-import schemacrawler.tools.options.InfoLevel;
 import schemacrawler.tools.options.OutputOptionsBuilder;
 import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;

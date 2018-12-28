@@ -49,6 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import schemacrawler.schemacrawler.Config;
+import schemacrawler.schemacrawler.InfoLevel;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
 import schemacrawler.shell.commands.ConnectCommands;
@@ -57,7 +58,6 @@ import schemacrawler.shell.commands.TextOutputCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
-import schemacrawler.tools.options.InfoLevel;
 import schemacrawler.tools.text.base.CommonTextOptions;
 import schemacrawler.tools.text.base.CommonTextOptionsBuilder;
 import schemacrawler.tools.text.schema.SchemaTextOptions;

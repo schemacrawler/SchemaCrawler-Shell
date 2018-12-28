@@ -52,13 +52,13 @@ import org.springframework.shell.standard.StandardMethodTargetRegistrar;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import schemacrawler.schemacrawler.InfoLevel;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.shell.commands.ConnectCommands;
 import schemacrawler.shell.commands.LoadCommands;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.shell.test.BaseSchemaCrawlerShellTest;
 import schemacrawler.shell.test.TestSchemaCrawlerShellState;
-import schemacrawler.tools.options.InfoLevel;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
