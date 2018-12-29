@@ -50,6 +50,8 @@ import schemacrawler.schema.Catalog;
 import schemacrawler.schemacrawler.Config;
 import schemacrawler.schemacrawler.InfoLevel;
 import schemacrawler.schemacrawler.SchemaCrawlerOptions;
+import schemacrawler.schemacrawler.SchemaInfoLevel;
+import schemacrawler.schemacrawler.SchemaInfoLevelBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptions;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
 import schemacrawler.tools.catalogloader.CatalogLoader;
@@ -100,8 +102,11 @@ public class LoadCommands
       final Config additionalConfiguration = state.getAdditionalConfiguration();
       final SchemaRetrievalOptions schemaRetrievalOptions = state
         .getSchemaRetrievalOptionsBuilder().toOptions();
+      final SchemaInfoLevel schemaInfoLevel = SchemaInfoLevelBuilder.builder()
+        .withInfoLevel(infoLevel).toOptions();
       final SchemaCrawlerOptions schemaCrawlerOptions = state
-        .getSchemaCrawlerOptionsBuilder().toOptions();
+        .getSchemaCrawlerOptionsBuilder().withSchemaInfoLevel(schemaInfoLevel)
+        .toOptions();
 
       final CatalogLoaderRegistry catalogLoaderRegistry = new CatalogLoaderRegistry();
       final CatalogLoader catalogLoader = catalogLoaderRegistry

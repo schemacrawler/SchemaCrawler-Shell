@@ -182,7 +182,7 @@ public class ExecuteCommandsTest
 
     // Load schema
     final LoadCommands loadCommands = new LoadCommands(state);
-    loadCommands.loadCatalog(InfoLevel.minimum);
+    loadCommands.loadCatalog(InfoLevel.standard);
   }
 
   @Before

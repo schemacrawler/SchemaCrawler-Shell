@@ -201,7 +201,7 @@ public class ExecuteCommandsIntegrationTest
 
   private void loadCatalog()
   {
-    shell.evaluate(() -> "load-catalog -infolevel minimum");
+    shell.evaluate(() -> "load-catalog -infolevel standard");
     assertThat(state.isLoaded(), is(true));
   }
 

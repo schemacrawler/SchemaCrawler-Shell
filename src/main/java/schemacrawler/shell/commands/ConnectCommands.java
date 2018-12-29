@@ -224,8 +224,7 @@ public class ConnectCommands
     LOGGER.log(Level.FINE, () -> "Creating SchemaCrawler options builder");
 
     final SchemaCrawlerOptionsBuilder schemaCrawlerOptionsBuilder = SchemaCrawlerOptionsBuilder
-      .builder();
-    schemaCrawlerOptionsBuilder.fromConfig(config);
+      .builder().fromConfig(config);
     state.setSchemaCrawlerOptionsBuilder(schemaCrawlerOptionsBuilder);
   }
 
