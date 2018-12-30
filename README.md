@@ -22,5 +22,5 @@ mvn -Dcomplete clean install
 
 Run
 ```sh
-java -jar .\target\schemacrawler-shell-15.03.03.01-exec.jar
+java -jar .\target\schemacrawler-shell-15.03.04.01-exec.jar
 ```
