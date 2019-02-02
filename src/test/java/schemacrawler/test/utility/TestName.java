@@ -25,38 +25,46 @@ http://www.gnu.org/licenses/
 
 ========================================================================
 */
+package schemacrawler.test.utility;
 
-package schemacrawler.shell.test;
 
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
-import static org.springframework.util.ReflectionUtils.invokeMethod;
-
-import javax.validation.constraints.NotNull;
-
-import org.springframework.shell.CommandRegistry;
-import org.springframework.shell.MethodTarget;
-
-import schemacrawler.testdb.TestDatabase;
-
-public abstract class BaseSchemaCrawlerShellTest
+public class TestName
+  implements TestRule
 {
 
-  static
+  private String currentMethodFullName;
+  private String currentMethodName;
+
+  @Override
+  public Statement apply(final Statement base, final Description description)
   {
-    TestDatabase testDatabase = TestDatabase.startDefaultTestDatabase(false);
+    return new Statement()
+    {
+      @Override
+      public void evaluate()
+        throws Throwable
+      {
+        currentMethodName = description.getMethodName();
+        currentMethodFullName = description.getTestClass().getSimpleName() + "."
+                                + currentMethodName;
+
+        base.evaluate();
+      }
+    };
   }
 
-  protected <T> T invoke(final MethodTarget methodTarget, final Object... args)
+  public String currentMethodFullName()
   {
-    return (T) invokeMethod(methodTarget.getMethod(),
-                            methodTarget.getBean(),
-                            args);
+    return currentMethodFullName;
   }
 
-  protected MethodTarget lookupCommand(@NotNull final CommandRegistry registry,
-                                       @NotNull final String command)
+  public String currentMethodName()
   {
-    return registry.listCommands().get(command);
+    return currentMethodName;
   }
 
 }

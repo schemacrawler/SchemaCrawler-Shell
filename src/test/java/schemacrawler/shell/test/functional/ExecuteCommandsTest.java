@@ -36,9 +36,9 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 import static schemacrawler.test.utility.FileHasContent.classpathResource;
-import static schemacrawler.test.utility.FileHasContent.fileResource;
 import static schemacrawler.test.utility.FileHasContent.hasNoContent;
 import static schemacrawler.test.utility.FileHasContent.hasSameContentAs;
+import static schemacrawler.test.utility.FileHasContent.outputOf;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -119,10 +119,10 @@ public class ExecuteCommandsTest
 
     invoke(commandTarget);
 
-    assertThat(fileResource(out),
+    assertThat(outputOf(out),
                hasSameContentAs(classpathResource(testName
                  .currentMethodFullName())));
-    assertThat(fileResource(err), hasNoContent());
+    assertThat(outputOf(err), hasNoContent());
 
   }
 
@@ -161,10 +161,10 @@ public class ExecuteCommandsTest
     assertThat(returnValue, is(instanceOf(AttributedString.class)));
     assertThat(returnValue.toString(), startsWith("Completed"));
 
-    assertThat(fileResource(out),
+    assertThat(outputOf(out),
                hasSameContentAs(classpathResource(testName
                  .currentMethodFullName())));
-    assertThat(fileResource(err), hasNoContent());
+    assertThat(outputOf(err), hasNoContent());
   }
 
   @Before

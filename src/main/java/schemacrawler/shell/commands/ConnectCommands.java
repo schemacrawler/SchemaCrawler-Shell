@@ -47,15 +47,15 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import schemacrawler.schemacrawler.Config;
-import schemacrawler.schemacrawler.DatabaseConfigConnectionOptions;
 import schemacrawler.schemacrawler.DatabaseServerType;
 import schemacrawler.schemacrawler.SchemaCrawlerException;
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder;
 import schemacrawler.schemacrawler.SchemaRetrievalOptionsBuilder;
-import schemacrawler.schemacrawler.SingleUseUserCredentials;
 import schemacrawler.shell.state.SchemaCrawlerShellState;
+import schemacrawler.tools.databaseconnector.DatabaseConfigConnectionOptions;
 import schemacrawler.tools.databaseconnector.DatabaseConnector;
 import schemacrawler.tools.databaseconnector.DatabaseConnectorRegistry;
+import schemacrawler.tools.databaseconnector.SingleUseUserCredentials;
 import sf.util.SchemaCrawlerLogger;
 import sf.util.StringFormat;
 import us.fatehi.commandlineparser.CommandLineUtility;
